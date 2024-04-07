@@ -2,6 +2,10 @@ package com.gene.IM.service;
 
 import java.util.Map;
 
+import com.gene.IM.entity.Material;
+
+import java.util.List;
+
 public interface LoginService {
 
     /***
@@ -21,5 +25,15 @@ public interface LoginService {
     public Map<String,Object> login(String userID, String pwd);
 
 }
+
+    Material findById(long materialId);
+
+    List<Material> find();
+
+    int insert(Material material);
+
+    int update(Material material);
+
+    int deleteById(long materialId);
 
 

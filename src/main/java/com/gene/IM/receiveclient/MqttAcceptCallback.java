@@ -184,6 +184,6 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         // 以/#结尾表示订阅所有以test开头的主题
         // 订阅所有机构主题
 //        mqttAcceptClient.subscribe("testtopic/#", 0);
-        mqttAcceptClient.subscribe("TopicA", 0);
+        mqttAcceptClient.subscribe("publish", 0);
     }
 }

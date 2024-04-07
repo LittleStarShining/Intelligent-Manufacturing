@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gene.IM.entity.Material">
+
+    <resultMap id="materialResultMap" type="com.gene.IM.entity.Material">
+        <id property="materialId" column="materialId" />
+        <result property="num" column="num" />
+        <result property="cumulation" column="cumulation" />
+        <result property="need" column="need" />
+        <result property="updateDate" column="updateDate" />
+    </resultMap>
+
+    <!-- Select Query -->
+    <select id="find" parameterType="com.gene.IM.entity.Material" resultMap="materialResultMap">
+        SELECT * FROM materials
+        <where>
+            <if test="materialId != null">
+                AND materialId = #{materialId}
+            </if>
+            <if test="num != null">
+                AND num = #{num}
+            </if>
+
+            <if test="need != null">
+                AND need = #{need}
+            </if>
+            <if test="updateDate != null">
+                AND updateDate = #{updateDate}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- Update Query -->
+    <update id="update" parameterType="com.example.model.Material">
+        UPDATE materials
+        <set>
+            <if test="num != null">
+                num = #{num},
+            </if>
+            <if test="cumulation != null">
+                cumulation = #{cumulation},
+            </if>
+            <if test="need != null">
+                need = #{need},
+            </if>
+            <if test="updateDate != null">
+            updateDate = #{updateDate}
+            </if>
+        </set>
+        WHERE materialId = #{materialId}
+    </update>
+
+    <!-- Delete Query -->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM materials WHERE materialId = #{materialId}
+    </delete>
+
+    <!-- 插入一条新的Material记录 -->
+    <insert id="insertMaterial" parameterType="com.gene.IM.entity.Material">
+        INSERT INTO material (materialId, num, CURRENT_DATE)
+        VALUES (#{materialId}, #{num}, #{updateDate})
+    </insert>
+
+
+    <!-- 根据materialId查询Material记录 -->
+    <select id="getMaterialById" resultType="com.example.model.Material" parameterType="long">
+        SELECT materialId, num, cumulation, need, updateDate
+        FROM material
+        WHERE materialId = #{materialId}
+    </select>
+
+</mapper>
