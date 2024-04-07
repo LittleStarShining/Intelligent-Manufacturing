@@ -1,6 +1,6 @@
 package com.gene.IM.DTO;
 
-public class userLogin {
+public class UserLogin {
     private int id;
     private String name;
     private String userID;

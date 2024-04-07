@@ -18,7 +18,7 @@ spring:
   main:
     allow-circular-references: true  #允许循环引用
   datasource:
-    url: jdbc:mysql://192.168.22.226:3306/demo?useUnicode=true&characterEncoding=utf-8&userSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://127.0.0.1:3306/demo?useUnicode=true&characterEncoding=utf-8&userSSL=false&serverTimezone=GMT%2B8
     username: root
     password: ljx030225
     driver-class-name: com.mysql.cj.jdbc.Driver

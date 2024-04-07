@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.Map;
 
+// 之前任务需要，后续可更改
 @RestController
 @RequestMapping("")
 public class MqttApi {

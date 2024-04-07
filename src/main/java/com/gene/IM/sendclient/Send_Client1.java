@@ -12,6 +12,7 @@ import com.gene.IM.util.MqttProperties;
 
 import java.util.UUID;
 
+// 之前任务需要，后续可更改
 @Component
 public class Send_Client1 {
 

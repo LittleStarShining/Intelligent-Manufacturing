@@ -8,6 +8,7 @@ import com.gene.IM.entity.Record;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+// 之前任务需要，后续可删除
 public class RecordMapper implements RowMapper<Record> {
 
 

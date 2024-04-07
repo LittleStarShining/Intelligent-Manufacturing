@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 
+// 之前任务需要，后续可更改
 @Component
 public class SendClient1_CallBack implements MqttCallbackExtended {
 

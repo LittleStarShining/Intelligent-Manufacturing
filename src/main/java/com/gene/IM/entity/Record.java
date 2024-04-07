@@ -3,6 +3,7 @@ package com.gene.IM.entity;
 import java.sql.Time;
 import java.util.Date;
 
+// 之前任务需要，后续可删除
 public class Record {
     private int recordID;
     private int temp;

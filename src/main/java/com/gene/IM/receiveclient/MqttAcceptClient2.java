@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.gene.IM.util.MqttProperties;
 
-
+// 之前任务需要，后续可更改
 @Component
 public class MqttAcceptClient2 {
 

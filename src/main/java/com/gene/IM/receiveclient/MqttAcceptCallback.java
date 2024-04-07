@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+// 之前任务需要，后续可更改
 @Component
 public class MqttAcceptCallback implements MqttCallbackExtended {
 

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+// 之前任务需要，后续可更改
 @Service
 public interface MqttService {
 
