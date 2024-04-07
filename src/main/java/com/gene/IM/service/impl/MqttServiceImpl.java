@@ -4,10 +4,6 @@ import com.gene.IM.mapper.RecordMapper;
 import com.gene.IM.entity.Record;
 import com.gene.IM.service.MqttService;
 
-import cn.hutool.db.Db;
-import cn.hutool.db.Entity;
-import cn.hutool.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
