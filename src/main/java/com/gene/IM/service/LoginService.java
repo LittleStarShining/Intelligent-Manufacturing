@@ -26,14 +26,4 @@ public interface LoginService {
 
 }
 
-    Material findById(long materialId);
-
-    List<Material> find();
-
-    int insert(Material material);
-
-    int update(Material material);
-
-    int deleteById(long materialId);
-
 
