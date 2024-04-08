@@ -1,18 +1,20 @@
 package com.gene.IM.service;
 
+import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.entity.Material;
 
 import java.util.List;
 
 public interface MaterialService {
 
-    Material getMaterialById(long materialId);
+    Material getMaterialById(Integer materialId);
 
-    List<Material> find(Material material);
+    List<Material> find(SelectMaterial material);
 
     int insertMaterial(Material material);
 
-    int update(Material material);
+//    int update(Material material);
+    Material update(Material material);
 
-    int deleteById(long materialId);
+    int deleteById(Integer materialId);
 }

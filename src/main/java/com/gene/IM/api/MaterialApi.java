@@ -1,16 +1,12 @@
 package com.gene.IM.api;
 
+import com.gene.IM.DTO.SelectMaterial;
+import com.gene.IM.JWT.annotation.NotNeedJWT;
+import com.gene.IM.entity.CommonResult;
 import com.gene.IM.entity.Material;
 import com.gene.IM.service.MaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,31 +14,51 @@ import java.util.List;
 @RequestMapping("/materials")
 public class MaterialApi{
 
+    @Autowired
     private MaterialService materialService;
 
-    @GetMapping("/{materialId}")
-    public Material getMaterialById(@PathVariable long materialId) {
-        return materialService.getMaterialById(materialId);
+    @NotNeedJWT
+    @GetMapping("getid/{materialId}")
+    public CommonResult<Material> getMaterialById(@PathVariable Integer materialId) {
+        Material material = materialService.getMaterialById(materialId);
+            return new CommonResult<Material>(material,"查询");
+    }
+    @NotNeedJWT
+    @PostMapping("/get")
+    public CommonResult<List<Material>> getMaterials(@RequestBody SelectMaterial material) {
+        return new CommonResult<List<Material>>(materialService.find(material),"查询");
     }
 
-    @GetMapping("/{materialId}")
-    public List<Material> getMaterials(Material material) {
-        return materialService.find(material);
+    @NotNeedJWT
+    @PostMapping("/add")
+    @ResponseBody
+    public CommonResult<Integer> addMaterial(@RequestBody Material material) {
+        CommonResult<Integer>response =new CommonResult<Integer>();
+        int result = materialService.insertMaterial(material);
+        if(result>0) {
+            return response.success(result, "添加货源");
+        }
+        else {
+            return response.failed(result, "添加货源");
+        }
+    }
+    @NotNeedJWT
+    @PutMapping("update")
+    public CommonResult<Material> updateMaterial(@RequestBody Material material) {
+        return new CommonResult<Material>(materialService.update(material));
     }
 
-    @PostMapping
-    public void addMaterial(@RequestBody Material material) {
-        materialService.insertMaterial(material);
-    }
+    @NotNeedJWT
+    @DeleteMapping("delete/{materialId}")
+    public CommonResult<Integer> deleteMaterial(@PathVariable Integer materialId) {
 
-    @PutMapping("/{materialId}")
-    public void updateMaterial(@PathVariable long materialId, @RequestBody Material material) {
-        material.setMaterialId(materialId);
-        materialService.update(material);
-    }
-
-    @DeleteMapping("/{materialId}")
-    public void deleteMaterial(@PathVariable long materialId) {
-        materialService.deleteById(materialId);
+        CommonResult<Integer>response =new CommonResult<Integer>();
+        int result = materialService.deleteById(materialId);
+        if(result>0) {
+            return response.success(result, "删除货源");
+        }
+        else {
+            return response.failed(result, "删除货源");
+        }
     }
 }

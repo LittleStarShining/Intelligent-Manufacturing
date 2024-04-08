@@ -18,8 +18,8 @@ spring:
   main:
     allow-circular-references: true  #允许循环引用
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/demo?useUnicode=true&characterEncoding=utf-8&userSSL=false&serverTimezone=GMT%2B8
-    username: root
+    url: jdbc:mysql://192.168.1.74:3306/demo?useUnicode=true&characterEncoding=utf-8&userSSL=false&serverTimezone=GMT%2B8
+    username: lizhan
     password: ljx030225
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
@@ -58,10 +58,10 @@ spring:
       #配置StatViewServlet
       stat-view-servlet:
         url-pattern: "/druid/*"
-        #允许那些ip
-        allow: 127.0.0.1
-        login-username: root
-        login-password: ljx030225
+#        #允许那些ip
+#        allow: 127.0.0.1
+#        login-username: root
+#        login-password: ljx030225
         #禁止那些ip
         deny: 192.168.1.102
         #是否可以重置
@@ -81,8 +81,8 @@ mybatis:
   # 配置MyBatis的xml配置文件路径
   mapper-locations: classpath:mapper/*.xml
   # 开启驼峰uName自动映射到u_name
-  #map-underscore-to-camel-case: true
+  map-underscore-to-camel-case: true
 # 打印sql
 logging:
   level:
-    com.example.demo.mapper: debug
+    com.gene.IM.mapper: debug

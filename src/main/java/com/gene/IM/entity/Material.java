@@ -3,45 +3,45 @@ package com.gene.IM.entity;
 
 public class Material {
 
-  private long materialId;
-  private long num;
-  private long cumulation;
-  private long need;
+  private Integer materialId;
+  private Integer num;
+  private Integer cumulation;
+  private Integer need;
   private java.sql.Timestamp updateDate;
 
 
-  public long getMaterialId() {
+  public Integer getMaterialId() {
     return materialId;
   }
 
-  public void setMaterialId(long materialId) {
+  public void setMaterialId(Integer materialId) {
     this.materialId = materialId;
   }
 
 
-  public long getNum() {
+  public Integer getNum() {
     return num;
   }
 
-  public void setNum(long num) {
+  public void setNum(Integer num) {
     this.num = num;
   }
 
 
-  public long getCumulation() {
+  public Integer getCumulation() {
     return cumulation;
   }
 
-  public void setCumulation(long cumulation) {
+  public void setCumulation(Integer cumulation) {
     this.cumulation = cumulation;
   }
 
 
-  public long getNeed() {
+  public Integer getNeed() {
     return need;
   }
 
-  public void setNeed(long need) {
+  public void setNeed(Integer need) {
     this.need = need;
   }
 

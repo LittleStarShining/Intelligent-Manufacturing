@@ -3,22 +3,22 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.gene.IM.entity.Material">
+<mapper namespace="com.gene.IM.mapper.MaterialMapper">
 
     <resultMap id="materialResultMap" type="com.gene.IM.entity.Material">
-        <id property="materialId" column="materialId" />
+        <id property="materialId" column="material_id" />
         <result property="num" column="num" />
         <result property="cumulation" column="cumulation" />
         <result property="need" column="need" />
-        <result property="updateDate" column="updateDate" />
+        <result property="updateDate" column="update_date" />
     </resultMap>
 
     <!-- Select Query -->
-    <select id="find" parameterType="com.gene.IM.entity.Material" resultMap="materialResultMap">
-        SELECT * FROM materials
+    <select id="find" parameterType="com.gene.IM.DTO.SelectMaterial" resultMap="materialResultMap">
+        SELECT * FROM material
         <where>
             <if test="materialId != null">
-                AND materialId = #{materialId}
+                AND material_id = #{materialId}
             </if>
             <if test="num != null">
                 AND num = #{num}
@@ -28,15 +28,18 @@
                 AND need = #{need}
             </if>
             <if test="updateDate != null">
-                AND updateDate = #{updateDate}
+                AND update_date = #{updateDate}
             </if>
+
+            <if test="updateDateEndTime!=null and updateDateEndTime!=''">and update_date &lt;= #{updateDateEndTime}</if>
+            <if test="updateDateStartTime!=null and updateDateStartTime!=''">and update_date &gt;= #{updateDateStartTime}</if>
         </where>
     </select>
 
 
     <!-- Update Query -->
-    <update id="update" parameterType="com.example.model.Material">
-        UPDATE materials
+    <update id="update" parameterType="com.gene.IM.entity.Material" >
+        UPDATE material
         <set>
             <if test="num != null">
                 num = #{num},
@@ -48,29 +51,43 @@
                 need = #{need},
             </if>
             <if test="updateDate != null">
-            updateDate = #{updateDate}
+                update_date = #{updateDate}
             </if>
         </set>
-        WHERE materialId = #{materialId}
+        WHERE material_id = #{materialId}
     </update>
 
     <!-- Delete Query -->
-    <delete id="deleteById" parameterType="long">
-        DELETE FROM materials WHERE materialId = #{materialId}
+    <delete id="deleteById" parameterType="Integer">
+        DELETE FROM materials WHERE material_id = #{materialId}
     </delete>
 
     <!-- 插入一条新的Material记录 -->
     <insert id="insertMaterial" parameterType="com.gene.IM.entity.Material">
-        INSERT INTO material (materialId, num, CURRENT_DATE)
-        VALUES (#{materialId}, #{num}, #{updateDate})
+        INSERT INTO material (material_id, num,update_date)
+        VALUES (#{materialId}, #{num}, CURRENT_DATE)
     </insert>
+
+<!--    &lt;!&ndash; 插入一条新的Material记录 &ndash;&gt;-->
+<!--    <insert id="insertMaterial" parameterType="com.gene.IM.entity.Material">-->
+<!--        INSERT INTO material-->
+<!--        <trim prefix="(" suffix=")" suffixOverrides=",">-->
+<!--            <if test="materialId != null">material_id,</if>-->
+<!--            <if test="num != null">num,</if>-->
+<!--        </trim>-->
+<!--        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">-->
+<!--            <if test="materialId != null">#{materialId},</if>-->
+<!--            <if test="num != null">#{num},</if>-->
+<!--        </trim>-->
+
+<!--    </insert>-->
 
 
     <!-- 根据materialId查询Material记录 -->
-    <select id="getMaterialById" resultType="com.example.model.Material" parameterType="long">
-        SELECT materialId, num, cumulation, need, updateDate
+    <select id="getMaterialById" resultMap="materialResultMap" parameterType="Integer">
+        SELECT *
         FROM material
-        WHERE materialId = #{materialId}
+        WHERE material_id = #{materialId}
     </select>
 
 </mapper>
