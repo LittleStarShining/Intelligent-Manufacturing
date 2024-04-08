@@ -4,6 +4,16 @@ package com.gene.IM.entity;
 public class Material {
 
   private Integer materialId;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  private String name;
   private Integer num;
   private Integer cumulation;
   private Integer need;

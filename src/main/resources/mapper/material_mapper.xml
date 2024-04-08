@@ -8,6 +8,7 @@
     <resultMap id="materialResultMap" type="com.gene.IM.entity.Material">
         <id property="materialId" column="material_id" />
         <result property="num" column="num" />
+        <result property="name" column="name" />
         <result property="cumulation" column="cumulation" />
         <result property="need" column="need" />
         <result property="updateDate" column="update_date" />
@@ -24,6 +25,9 @@
                 AND num = #{num}
             </if>
 
+            <if test="name != null">
+                name = #{name},
+            </if>
             <if test="need != null">
                 AND need = #{need}
             </if>
@@ -31,8 +35,8 @@
                 AND update_date = #{updateDate}
             </if>
 
-            <if test="updateDateEndTime!=null and updateDateEndTime!=''">and update_date &lt;= #{updateDateEndTime}</if>
-            <if test="updateDateStartTime!=null and updateDateStartTime!=''">and update_date &gt;= #{updateDateStartTime}</if>
+            <if test="updateDateEndTime!=null">and update_date &lt;= #{updateDateEndTime}</if>
+            <if test="updateDateStartTime!=null">and update_date &gt;= #{updateDateStartTime}</if>
         </where>
     </select>
 
@@ -43,6 +47,9 @@
         <set>
             <if test="num != null">
                 num = #{num},
+            </if>
+            <if test="name != null">
+                name = #{name},
             </if>
             <if test="cumulation != null">
                 cumulation = #{cumulation},
@@ -59,13 +66,13 @@
 
     <!-- Delete Query -->
     <delete id="deleteById" parameterType="Integer">
-        DELETE FROM materials WHERE material_id = #{materialId}
+        DELETE FROM material WHERE material_id = #{materialId}
     </delete>
 
     <!-- 插入一条新的Material记录 -->
     <insert id="insertMaterial" parameterType="com.gene.IM.entity.Material">
-        INSERT INTO material (material_id, num,update_date)
-        VALUES (#{materialId}, #{num}, CURRENT_DATE)
+        INSERT INTO material (material_id, name,num,update_date)
+        VALUES (#{materialId},#{name}, #{num}, CURRENT_DATE)
     </insert>
 
 <!--    &lt;!&ndash; 插入一条新的Material记录 &ndash;&gt;-->
