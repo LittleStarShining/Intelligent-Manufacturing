@@ -1,16 +1,29 @@
 package com.gene.IM.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.sql.Timestamp;
 
 public class SelectMaterial {
 
     private Integer materialId;
+
+
+
+    private String name;
     private Integer num;
     private Integer cumulation;
     private Integer need;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private java.sql.Timestamp updateDate;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private java.sql.Timestamp updateDateEndTime;
-
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private java.sql.Timestamp updateDateStartTime;
 
     public Integer getMaterialId() {
@@ -21,6 +34,14 @@ public class SelectMaterial {
         this.materialId = materialId;
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
     public Integer getNum() {
         return num;
     }

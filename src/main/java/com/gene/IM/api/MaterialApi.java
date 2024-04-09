@@ -25,8 +25,16 @@ public class MaterialApi{
     }
     @NotNeedJWT
     @PostMapping("/get")
+
     public CommonResult<List<Material>> getMaterials(@RequestBody SelectMaterial material) {
-        return new CommonResult<List<Material>>(materialService.find(material),"查询");
+        List<Material> result = (materialService.find(material));
+        if(result.size()>0){
+            //查询结果不为空
+            return new CommonResult<List<Material>>(materialService.find(material),"查询");
+        }
+        //查询结果为空
+        return new CommonResult<List<Material>>().failed(result, "查询结果为空，");
+
     }
 
     @NotNeedJWT
