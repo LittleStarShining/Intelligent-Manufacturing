@@ -26,7 +26,7 @@
             </if>
 
             <if test="name != null">
-                name = #{name},
+                name = #{name}
             </if>
             <if test="need != null">
                 AND need = #{need}

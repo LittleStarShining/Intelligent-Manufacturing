@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/materials")
 public class MaterialApi{
 
@@ -55,6 +56,7 @@ public class MaterialApi{
     public CommonResult<Material> updateMaterial(@RequestBody Material material) {
         return new CommonResult<Material>(materialService.update(material));
     }
+
 
     @NotNeedJWT
     @DeleteMapping("delete/{materialId}")

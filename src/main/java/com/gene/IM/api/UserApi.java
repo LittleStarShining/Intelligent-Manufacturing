@@ -16,6 +16,7 @@ public class UserApi {
     private LoginService loginService;
 
     @NotNeedJWT
+
     @PostMapping("/login")
     public Map<String,Object> doLogin(@RequestBody Map<String,Object> body){
         String userID = (String)body.get("userID");

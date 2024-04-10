@@ -10,6 +10,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -24,18 +25,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import static com.gene.IM.api.MqttApi.connect;
+import static com.gene.IM.api.MqttApi.macQueue;
+
 // 之前任务需要，后续可更改
 @Component
 public class MqttAcceptCallback implements MqttCallbackExtended {
 
     private static final Logger logger = LoggerFactory.getLogger(MqttAcceptCallback.class);
-    
-    BlockingQueue<String> queue = new ArrayBlockingQueue<>(2);
+
+    public static BlockingQueue<JSONObject> massageQueue = new ArrayBlockingQueue<>(20);
 
     @Autowired
     private MqttAcceptClient mqttAcceptClient;
     
     @Autowired
+    @Qualifier("send_Client1")
     private Send_Client1  client8;
     
     
@@ -64,7 +69,6 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
      */
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception, SQLException {
-    	System.out.println("CLINT1");
     	String s =  new String(mqttMessage.getPayload());
         logger.info("接收消息主题 : " + topic);
         logger.info("接收消息Qos : " + mqttMessage.getQos());
@@ -84,9 +88,8 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         String formattedTime = currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
 
-        
-        
-        
+
+
         String payload = mqttMessage.toString();
         if(topic.equals("TopicA")) {
         	System.out.println("TTTTTTT");
@@ -106,44 +109,45 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
             
             
         } else if (topic.equals("topicB")) {
-            try {
-                queue.put(payload);
-                if (queue.size() == 2) {
-                    int averageTemp = 0;
-                    int averageWet = 0;
-                    String status = null;
-                    // 处理队列中的数据
-                    for (String data : queue) {
-                        System.out.println("Processing: " + data);
-                        JSONObject jsonObject = new JSONObject(data);
-                        int temp = (int) jsonObject.get("temp");
-                        int wet = (int) jsonObject.get("wet");
-                        status = (String) jsonObject.get("status");
-                        averageTemp+=temp;
-                        averageWet+=wet;
-                    }
-                    averageTemp/=2;
-                    averageWet/=2;
-                    
-                    Db.use().execute("INSERT INTO average(av_temp,av_wet,status,date,time) VALUES(?,?,?,?,?)", averageTemp, averageWet,status,formattedDate,formattedTime);
-                    
-                    // 清空队列
-                    queue.clear();
-                    
-                    
-                    
-                    
-                    
-                   
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                massageQueue.put(payload);
+//                if (massageQueue.size() == 2) {
+//                    int averageTemp = 0;
+//                    int averageWet = 0;
+//                    String status = null;
+//                    // 处理队列中的数据
+//                    for (String data : massageQueue) {
+//                        System.out.println("Processing: " + data);
+//                        JSONObject jsonObject = new JSONObject(data);
+//                        int temp = (int) jsonObject.get("temp");
+//                        int wet = (int) jsonObject.get("wet");
+//                        status = (String) jsonObject.get("status");
+//                        averageTemp+=temp;
+//                        averageWet+=wet;
+//                    }
+//                    averageTemp/=2;
+//                    averageWet/=2;
+//
+//                    Db.use().execute("INSERT INTO average(av_temp,av_wet,status,date,time) VALUES(?,?,?,?,?)", averageTemp, averageWet,status,formattedDate,formattedTime);
+//
+//                    // 清空队列
+//                    massageQueue.clear();
+//
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
-        else if(topic.equals("topicE")) {
-        	JSONObject jsonObject = new JSONObject(mqttMessage.toString());
-        	
-        	
+        //获取收到的硬件设备信息
+        else if(topic.equals("publish")) {
+
+            macQueue.add(new JSONObject(mqttMessage.toString()));
+            System.out.println(macQueue);
+            //如果已经连接
+            if(connect){
+                massageQueue.add(new JSONObject(mqttMessage.toString()));
+
+            }
         	 
         }
     }
