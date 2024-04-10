@@ -40,6 +40,19 @@ public class OrderApi {
         return orderService.orderBySituation(situation,sort);
     }
 
+    @NotNeedJWT
+    @PostMapping("/vagueSelect")
+    public Map<String,Object> vagueSelect(@RequestBody Map<String,Object> body){
+        String source = (String) body.get("source");
+        String key = (String) body.get("key");
+        return orderService.vagueSelect(source,key);
+    }
+
+    @NotNeedJWT
+    @GetMapping("/showDoneTask")
+    public Map<String,Object> showDoneList(){
+        return orderService.showDoneList();
+    }
 
 
 }

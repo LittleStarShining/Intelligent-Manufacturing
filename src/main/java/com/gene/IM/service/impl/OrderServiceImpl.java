@@ -54,6 +54,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Map<String, Object> showDoneList() {
+        Map<String,Object> res = new HashMap<>();
+        Map<String,Object> data = new HashMap<>();
+        try{
+            data.put("doneTask",orderInfoMapper.getDoneTask());
+            res.put("data",data);
+
+        }catch (Exception e){
+            res.put("code",0);
+            res.put("desc","查询失败");
+            return res;
+        }
+        res.put("code",1);
+        res.put("desc","查询成功");
+
+        return res;
+    }
+
+    @Override
     public Map<String, Object> showOrderDetail(int id) {
         Map<String,Object> res = new HashMap<>();
         Map<String,Object> data = new HashMap<>();
@@ -105,4 +124,25 @@ public class OrderServiceImpl implements OrderService {
 
         return res;
     }
+
+    @Override
+    public Map<String, Object> vagueSelect(String source,String key) {
+        Map<String,Object> res = new HashMap<>();
+        Map<String,Object> data = new HashMap<>();
+        try{
+            data.put("task",orderInfoMapper.vagueSelect(source,key));
+            res.put("data",data);
+            System.out.println(orderInfoMapper.vagueSelect(source,key).get(0).getOrderMoney());
+        }catch (Exception e){
+            res.put("code",0);
+            res.put("desc","查询失败");
+            return res;
+        }
+        res.put("code",1);
+        res.put("desc","查询成功");
+
+        return res;
+    }
+
+
 }

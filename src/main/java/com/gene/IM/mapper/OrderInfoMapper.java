@@ -14,6 +14,7 @@ public interface OrderInfoMapper {
     public List<OrderIndex> getTodayTask();
     public List<OrderInfo> getWaitingTask();
     public List<OrderInfo> getDoingTask();
+    public List<OrderInfo> getDoneTask();
 
     public List<TodayProgress> getCompleteRate();
     public int getDoneNum();
@@ -24,6 +25,14 @@ public interface OrderInfoMapper {
     public List<OrderInfo> WaitingOrderByDdl();
     public List<OrderInfo> DoingOrderByMoney();
     public List<OrderInfo> DoingOrderByDdl();
+
+    // 模糊搜索
+    public List<OrderInfo> vagueSelect(@Param("source")String source, @Param("key") String key);
+
+
+
+
+
 
 
 }

@@ -32,6 +32,14 @@
         <result property="lineID" column="line_id" />
     </resultMap>
 
+    <resultMap id="doneOrderListInfo" type="com.gene.IM.entity.OrderInfo">
+        <result property="orderID" column="id" />
+        <result property="typeName" column="type_name" />
+        <result property="orderMoney" column="order_money" />
+        <result property="ddl" column="ddl" />
+        <result property="lineID" column="line_id" />
+    </resultMap>
+
     <resultMap id="orderDetailInfo" type="com.gene.IM.entity.OrderInfo">
         <result property="orderID" column="id" />
         <result property="typeName" column="type_name" />
@@ -83,7 +91,7 @@
     <select id="getOrderDetail" resultMap="orderDetailInfo">
         SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money, o.order_time,o.ddl,o.material,o.progress,o.remain_time
         FROM `order` o
-                 LEFT JOIN order_line ol ON o.id = ol.order_id
+                 LEFT JOIN belong_line_order ol ON o.id = ol.order_id
         WHERE o.id = #{orderID};
     </select>
 
@@ -122,6 +130,23 @@
                  INNER JOIN order_line ol ON o.id = ol.order_id
         WHERE o.status = '处理中'
         ORDER BY o.ddl;
+    </select>
+
+    <select id="vagueSelect" resultMap="orderDetailInfo">
+        SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl, ol.line_id
+        FROM `order` o
+                 LEFT JOIN belong_line_order ol ON o.id = ol.order_id
+        WHERE o.status = #{source}
+          AND (CAST(o.id AS CHAR) LIKE CONCAT('%', #{key}, '%')
+            OR o.type_name LIKE CONCAT('%', #{key}, '%'));
+    </select>
+
+
+    <select id="getDoneTask" resultMap="doneOrderListInfo">
+        SELECT o.id, o.type_name, blo.line_id, o.order_money, o.ddl
+        FROM `order` o
+                 LEFT JOIN belong_line_order blo ON o.id = blo.order_id
+        WHERE o.status = '已完成';
     </select>
 
 
