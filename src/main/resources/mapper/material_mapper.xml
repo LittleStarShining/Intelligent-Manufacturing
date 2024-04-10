@@ -57,12 +57,27 @@
             <if test="need != null">
                 need = #{need},
             </if>
-            <if test="updateDate != null">
-                update_date = #{updateDate}
-            </if>
+                update_date = CURRENT_DATE
+
         </set>
         WHERE material_id = #{materialId}
     </update>
+
+    <!-- decreaseMaterial Query -->
+    <update id="decreaseMaterial" >
+        UPDATE material
+        <set>
+            <if test="num != null">
+                num = num - #{num},
+            </if>
+            <if test="cumulation != null">
+                cumulation = cumulation + #{cumulation},
+            </if>
+                update_date = CURRENT_DATE
+        </set>
+        WHERE material_id = #{materialId}
+    </update>
+
 
     <!-- Delete Query -->
     <delete id="deleteById" parameterType="Integer">

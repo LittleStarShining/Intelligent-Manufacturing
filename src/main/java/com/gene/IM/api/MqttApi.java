@@ -7,6 +7,8 @@ import cn.hutool.json.JSONUtil;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
 import com.gene.IM.entity.CommonResult;
 import com.gene.IM.entity.Material;
+import com.gene.IM.entity.OrderInfo;
+import com.gene.IM.mapper.DeviceMapper;
 import com.gene.IM.sendclient.Send_Client1;
 import com.gene.IM.service.DeviceService;
 import com.gene.IM.service.MqttService;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import static com.gene.IM.receiveclient.MqttAcceptCallback.macSet;
 import static com.gene.IM.receiveclient.MqttAcceptCallback.massageQueue;
 
 
@@ -30,10 +33,14 @@ import static com.gene.IM.receiveclient.MqttAcceptCallback.massageQueue;
 @RequestMapping("/mqtt")
 public class MqttApi {
 
-    public static BlockingQueue<JSONObject> macQueue = new ArrayBlockingQueue<JSONObject>(30);
+//    public static BlockingQueue<JSONObject> macQueue = new ArrayBlockingQueue<JSONObject>(30);
 
     //设备是否连接
     public static boolean connect=false;
+
+    public static int line1OrderNum;
+    public static int line2OrderNum;
+    public static int line3OrderNum;
     /**
      *  http:/localhost:9091/sendmsg
      */
@@ -48,6 +55,9 @@ public class MqttApi {
 
     @Autowired
     private MqttService mqttService;
+
+    @Autowired
+    private DeviceMapper deviceMapper;
 
     @Autowired
     private DeviceService deviceService;
@@ -65,10 +75,16 @@ public class MqttApi {
     public JSONObject getAllDevices() {
 
         JSONObject allDevices = JSONUtil.createObj();
-        while (!macQueue.isEmpty()){
-            allDevices.append("设备",macQueue.poll());
+//        while (!macSet.isEmpty()){
+//            allDevices.append("设备",macSet);
+//        }
+        for (String macElement : macSet) {
+            allDevices.append("设备",new JSONObject(macElement));
         }
 
+        line1OrderNum = deviceMapper.getLineOrderDetail(1).getOrderNum();
+        line2OrderNum = deviceMapper.getLineOrderDetail(2).getOrderNum();
+        line3OrderNum = deviceMapper.getLineOrderDetail(3).getOrderNum();
         return allDevices;
         /*
         {
@@ -89,8 +105,8 @@ public class MqttApi {
     @NotNeedJWT
     @PostMapping("/connectDevices")
     public CommonResult<List<String>> connectDevices(@RequestBody JSONArray devices) {
-connect=true;
-System.out.println(devices);
+        connect=true;
+        System.out.println(devices);
         return new CommonResult<List<String>>(deviceService.connectDevices(devices));
 
     }
@@ -100,17 +116,17 @@ System.out.println(devices);
     public CommonResult<String> disconnectDevices() {
         connect=false;
         //清空消息队列(事实上应该在/getAllDevices已经清空了），等待硬件再次发布mac信息，用户访问/connectDevices再次连接
-        macQueue.clear();
+        macSet.clear();
 
         return new CommonResult<String>("已断开连接，等待下次连接");
 
     }
 
     @NotNeedJWT
-    @GetMapping("/getHumTempFlame")
-    public CommonResult<JSONObject> getHumTempFlame() {
+    @GetMapping("/getHumTempGas")
+    public CommonResult<JSONObject> getHumTempGas() {
 
-        return new CommonResult<JSONObject>(deviceService.getHumTempFlame());
+        return new CommonResult<JSONObject>(deviceService.getHumTempGas());
 
 
     }
@@ -132,46 +148,46 @@ System.out.println(devices);
         return null;
     }
 
-
-    @NotNeedJWT
-    @GetMapping(value = "/statistics")
-    public JSONObject publishTopic() throws SQLException {
-        Map result = mqttService.getTemp();
-        if(result!=null) {
-            JSONObject json1 = JSONUtil.createObj()
-                    .put("舒适",result.get("avg_temp_on"))
-                    .put("燥热",result.get("avg_temp_off"))
-                    .put("status","ok");
-            return json1;
-        }else {
-            JSONObject json1 = JSONUtil.createObj()
-                    .put("status","error");
-            return json1;
-        }
-
-    }
-
-    @PostMapping(value = "/windctl")
-    public JSONObject windctl(@RequestBody JSONObject sendMessage) {
-        String msg = sendMessage.getStr("switch");
-        JSONObject json1 = JSONUtil.createObj();
-        if(client1.publish(false ,"TopicC",msg)==1) {
-            json1.put("code", 1)
-                    .put("desc", "修改成功")
-                    .put("status", msg);
-        }else {
-            json1.put("code", 0)
-                    .put("desc", "修改失败");
-        }
-
-        return json1;    }
-
-
-    @PostMapping(value = "/waterctl")
-    public JSONObject waterctl(@RequestBody JSONObject sendMessage) {
-        String msg = sendMessage.getStr("switch");
-//        return client2.publish(false ,"TopicD",msg);
-        client2.publish(false ,"TopicD",msg);
-        return sendMessage;
-    }
+//
+//    @NotNeedJWT
+//    @GetMapping(value = "/statistics")
+//    public JSONObject publishTopic() throws SQLException {
+//        Map result = mqttService.getTemp();
+//        if(result!=null) {
+//            JSONObject json1 = JSONUtil.createObj()
+//                    .put("舒适",result.get("avg_temp_on"))
+//                    .put("燥热",result.get("avg_temp_off"))
+//                    .put("status","ok");
+//            return json1;
+//        }else {
+//            JSONObject json1 = JSONUtil.createObj()
+//                    .put("status","error");
+//            return json1;
+//        }
+//
+//    }
+//
+//    @PostMapping(value = "/windctl")
+//    public JSONObject windctl(@RequestBody JSONObject sendMessage) {
+//        String msg = sendMessage.getStr("switch");
+//        JSONObject json1 = JSONUtil.createObj();
+//        if(client1.publish(false ,"TopicC",msg)==1) {
+//            json1.put("code", 1)
+//                    .put("desc", "修改成功")
+//                    .put("status", msg);
+//        }else {
+//            json1.put("code", 0)
+//                    .put("desc", "修改失败");
+//        }
+//
+//        return json1;    }
+//
+//
+//    @PostMapping(value = "/waterctl")
+//    public JSONObject waterctl(@RequestBody JSONObject sendMessage) {
+//        String msg = sendMessage.getStr("switch");
+////        return client2.publish(false ,"TopicD",msg);
+//        client2.publish(false ,"TopicD",msg);
+//        return sendMessage;
+//    }
 }

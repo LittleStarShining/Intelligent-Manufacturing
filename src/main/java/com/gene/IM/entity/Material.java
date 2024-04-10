@@ -14,7 +14,7 @@ public class Material {
   }
 
   private String name;
-  private Integer num;
+  private Double num;
   private Integer cumulation;
   private Integer need;
   private java.sql.Timestamp updateDate;
@@ -29,11 +29,11 @@ public class Material {
   }
 
 
-  public Integer getNum() {
+  public Double getNum() {
     return num;
   }
 
-  public void setNum(Integer num) {
+  public void setNum(Double num) {
     this.num = num;
   }
 

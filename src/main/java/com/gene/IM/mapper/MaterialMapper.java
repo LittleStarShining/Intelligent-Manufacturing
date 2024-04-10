@@ -1,5 +1,6 @@
 package com.gene.IM.mapper;
 
+import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.entity.Material;
 import org.apache.ibatis.annotations.Mapper;
@@ -16,6 +17,7 @@ public interface MaterialMapper {
     int insertMaterial(Material material);
 
     int update(Material material);
-
+    int decreaseMaterial(Integer materialId,Double material);
+    MaterialDTO getLineOrderMaterial(Integer lineID);
     int deleteById(Integer materialId);
 }

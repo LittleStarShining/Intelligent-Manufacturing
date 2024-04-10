@@ -35,7 +35,7 @@ public interface DeviceService {
      * @return 添加的设备
      */
     public JSONObject addDevices(JSONObject device);
-    public JSONObject getHumTempFlame();
+    public JSONObject getHumTempGas();
 
     public JSONObject getPass();
 }

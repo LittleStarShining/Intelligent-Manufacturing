@@ -2,8 +2,10 @@ package com.gene.IM.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.gene.IM.DTO.DeviceInfo;
 import com.gene.IM.entity.CommonResult;
 import com.gene.IM.entity.Device;
+import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.DeviceMapper;
 import com.gene.IM.sendclient.Send_Client1;
 import com.gene.IM.service.DeviceService;
@@ -12,7 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.gene.IM.receiveclient.MqttAcceptCallback.massageQueue;
+import static com.gene.IM.api.MqttApi.*;
+import static com.gene.IM.receiveclient.MqttAcceptCallback.*;
 
 
 @Service
@@ -29,7 +32,7 @@ public class DeviceServiceImpl implements DeviceService {
         Device device = new Device();
         for(int i = 0; i < devices.size(); i++){
 
-            String mac =devices.getJSONObject(i).getStr("mac");
+            String mac = devices.getJSONObject(i).getStr("mac");
             device.setMac(mac);
             device.setStatus("已连接");
             //如果数据库没有该设备，则插入新设备
@@ -44,14 +47,14 @@ public class DeviceServiceImpl implements DeviceService {
             }
             connect_mac.add(mac);
             //通知硬件要连接的mac地址
-            send_client1.publish(false ,"subtopic","{\""+mac+"\"}");
+            send_client1.publish(false ,"subtopic","{mac:"+mac+"}");
         }
 
 //        for(JSONObject device:devices){
 //
 //        }
 //deviceMapper.updateDevice(new Device().setMac(devices);)
-        System.out.println("mac:"+ connect_mac);
+        System.out.println("Mac:"+ connect_mac);
 
 
         return connect_mac;
@@ -64,7 +67,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public JSONObject getHumTempFlame() {
+    public JSONObject getHumTempGas() {
         Double temperatureSum = 0.0;
         Double humiditySum = 0.0;
         Double flameSum = 0.0;
@@ -74,10 +77,10 @@ public class DeviceServiceImpl implements DeviceService {
             Iterator<JSONObject> iterator = massageQueue.iterator();
             while (iterator.hasNext()) {
                 JSONObject message = iterator.next();
-                if (message.getStr("mac").equals("000")) {
-                    humiditySum += message.getDouble("hum");
-                    temperatureSum += message.getDouble("temp");
-                    flameSum += message.getDouble("flame");
+                if (message.getStr("Mac").equals("0")) {
+                    humiditySum += message.getDouble("Hum");
+                    temperatureSum += message.getDouble("Temp");
+                    flameSum += message.getDouble("Gas");
                     count++;
                 }
             }
@@ -95,17 +98,10 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public JSONObject getPass() {
-        Iterator<JSONObject> iterator = massageQueue.iterator();
-        int num = 0;
-        int line =0;
-        while (iterator.hasNext()) {
-            JSONObject message = iterator.next();
-            if (message.getStr("mac").equals("001")) {
-                num = message.getInt("mac");
-                line = message.getInt("line");
-
-            }
-        }
-        return null;
+        JSONArray jsonArray = new JSONArray();
+//        jsonArray.add(new JSONObject().set("line", 1).set("pass", line1_num * 1.0 / line1OrderNum));
+//        jsonArray.add(new JSONObject().set("line", 2).set("pass", line1_num * 1.0 / line2OrderNum));
+//        jsonArray.add(new JSONObject().set("line", 3).set("pass", line1_num * 1.0 / line3OrderNum));
+        return new JSONObject().set("流水线通过率", jsonArray);
     }
 }

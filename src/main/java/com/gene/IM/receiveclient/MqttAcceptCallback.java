@@ -3,6 +3,9 @@ package com.gene.IM.receiveclient;
 import cn.hutool.db.Db;
 import cn.hutool.json.JSONObject;
 
+import com.gene.IM.DTO.MaterialDTO;
+import com.gene.IM.entity.OrderInfo;
+import com.gene.IM.mapper.MaterialMapper;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -22,11 +25,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import static com.gene.IM.api.MqttApi.connect;
-import static com.gene.IM.api.MqttApi.macQueue;
 
 // 之前任务需要，后续可更改
 @Component
@@ -35,10 +38,16 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
     private static final Logger logger = LoggerFactory.getLogger(MqttAcceptCallback.class);
 
     public static BlockingQueue<JSONObject> massageQueue = new ArrayBlockingQueue<>(20);
+    public static HashSet<String> macSet = new HashSet<>(); // 存储已经接收过的字符串
 
+    public static int line1_num = 0;
+    public static int line2_num = 0;
+    public static int line3_num = 0;
+    private JSONObject mac = new JSONObject();
     @Autowired
     private MqttAcceptClient mqttAcceptClient;
-    
+    @Autowired
+    private MaterialMapper materialMapper;
     @Autowired
     @Qualifier("send_Client1")
     private Send_Client1  client8;
@@ -140,13 +149,47 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         }
         //获取收到的硬件设备信息
         else if(topic.equals("publish")) {
-
-            macQueue.add(new JSONObject(mqttMessage.toString()));
-            System.out.println(macQueue);
+//            mac.get()
+            if(!macSet.contains(mqttMessage.toString())){
+                macSet.add(mqttMessage.toString());
+            }
+            System.out.println(macSet);
             //如果已经连接
             if(connect){
-                massageQueue.add(new JSONObject(mqttMessage.toString()));
+                JSONObject json = new JSONObject(mqttMessage.toString());
+                //获取通过瓶数，并更新material表的数量
+                if (json.getStr("Mac").equals("001")) {
+                    int num_temp1 = line1_num;
+                    int num_temp2 = line2_num;
+                    int num_temp3 = line3_num;
+                    if(json.getInt("line")==1){
+                        line1_num = json.getInt("Num");
+                        MaterialDTO m = materialMapper.getLineOrderMaterial(1);
+                        materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line1_num-num_temp1));
+                        num_temp1 = line1_num;
+                    }
+                    else if(json.getInt("line")==2){
+                        line2_num = json.getInt("Num");
+                        MaterialDTO m = materialMapper.getLineOrderMaterial(2);
+                        materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line2_num-num_temp2));
+                        num_temp2 = line2_num;
+                    }
+                    else if(json.getInt("line")==3){
+                        line3_num = json.getInt("Num");
+                        MaterialDTO m = materialMapper.getLineOrderMaterial(3);
+                        materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line3_num-num_temp3));
+                        num_temp3 = line3_num;
+                    }
 
+                }
+                if (!massageQueue.offer(json)) {
+                    // 队列已满，弹出头元素
+                    JSONObject oldMessage = massageQueue.poll();
+                    // 输出弹出的消息，您可以根据需求处理该消息
+                    System.out.println("队列已满，弹出的消息为：" + oldMessage.toString());
+                    massageQueue.offer(json);
+
+                }
             }
         	 
         }
