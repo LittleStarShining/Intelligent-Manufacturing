@@ -98,7 +98,7 @@
         SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
         FROM `order` o
         WHERE o.status = '等候'
-        ORDER BY o.order_money;
+        ORDER BY o.order_money DESC;
     </select>
 
     <select id="WaitingOrderByDdl" resultMap="waitingOrderListInfo">
@@ -113,7 +113,7 @@
         FROM `order` o
                  INNER JOIN order_line ol ON o.id = ol.order_id
         WHERE o.status = '处理中'
-        ORDER BY o.order_money;
+        ORDER BY o.order_money DESC;
     </select>
 
     <select id="DoingOrderByDdl" resultMap="doingOrderListInfo">
