@@ -14,7 +14,6 @@ public class OrderInfo {
     private int orderNum;
     private double orderMoney;
     private double progress;
-    private String material;
     private String status;
     private int lineID;
 
@@ -107,14 +106,6 @@ public class OrderInfo {
 
     public void setProgress(double progress) {
         this.progress = progress;
-    }
-
-    public String getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(String material) {
-        this.material = material;
     }
 
     public String getStatus() {

@@ -1,5 +1,6 @@
 package com.gene.IM.service;
 
+import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.entity.OrderInfo;
 
 import java.util.List;
@@ -27,5 +28,13 @@ public interface OrderService {
     public PriorityQueue<OrderInfo> getPriorityQueue();
     // 获得最优先订单
     public OrderInfo getHighestPriorityOrder();
+
+
+    public List<HistoryReportGraph> getGraphData();
+
+    public Map<String,Object> showHistoryReport();
+
+    public Map<String, Object> addOrder(OrderInfo request);
+
 
 }

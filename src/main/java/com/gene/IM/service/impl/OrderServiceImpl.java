@@ -1,5 +1,6 @@
 package com.gene.IM.service.impl;
 
+import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.OrderInfoMapper;
 import com.gene.IM.service.OrderService;
@@ -7,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service("OrderService")
@@ -214,4 +217,98 @@ public class OrderServiceImpl implements OrderService {
         PriorityQueue<OrderInfo> priorityQueue = getPriorityQueue();
         return priorityQueue.poll();
     }
+
+    @Override
+    public List<HistoryReportGraph> getGraphData() {
+        List<HistoryReportGraph> graphData = new ArrayList<>();
+        // 获取当前日期
+        LocalDate currentDate = LocalDate.now();
+        // 获取当前月份
+        Month currentMonth = currentDate.getMonth();
+        // 获取当前月份的整数值
+        int monthValue = currentMonth.getValue();
+        for (int i = monthValue; i >= monthValue-3; i--){
+            for (int j = 1; j <= 3; j++){
+                System.out.println(i);
+                System.out.println(j);
+                graphData.add(orderInfoMapper.genGraph(i,j));
+            }
+        }
+        return graphData;
+    }
+
+    @Override
+    public Map<String, Object> showHistoryReport() {
+        Map<String,Object> res = new HashMap<>();
+        Map<String,Object> data = new HashMap<>();
+        try{
+            int totalOrderNum = orderInfoMapper.getDoneNum();
+            float totalOrderMoney = 0;
+            int totalNum = 0;
+            List<OrderInfo> doneOrder = orderInfoMapper.getDoneTask();
+            for (OrderInfo r:doneOrder){
+                totalOrderMoney+=r.getOrderMoney();
+                totalNum+=r.getOrderNum();
+            }
+
+            float avgNum = (float) totalNum / 3;
+            data.put("totalOrderNum",totalOrderNum);
+            data.put("totalOrderMoney",totalOrderMoney);
+            data.put("totalNum",totalNum);
+            data.put("avgNum",avgNum);
+            List<HistoryReportGraph> list = this.getGraphData();
+            System.out.println(list.get(0).getLineID());
+            data.put("graphData",list);
+            res.put("data",data);
+        }catch (Exception e){
+            res.put("code",0);
+            res.put("desc","生成失败");
+            return res;
+        }
+        res.put("code",1);
+        res.put("desc","生成成功");
+
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> addOrder(OrderInfo request) {
+        Map<String, Object> res = new HashMap<>();
+        try {
+            // 计算sumTime
+            int sumTime = (int) ChronoUnit.DAYS.between(request.getOrderTime(), request.getDdl());
+
+            // 计算remainTime
+            int remainTime = (int) ChronoUnit.DAYS.between(LocalDate.now(), request.getDdl());
+
+            // 设置progress和status
+            double progress = 0.0;
+            String status = "等候";
+
+            // 构造订单对象
+            OrderInfo order = new OrderInfo();
+            order.setTypeName(request.getTypeName());
+            order.setOrderTime(request.getOrderTime());
+            order.setDdl(request.getDdl());
+            order.setOrderNum(request.getOrderNum());
+            order.setOrderMoney(request.getOrderMoney());
+            order.setSumTime(sumTime);
+            order.setRemainTime(remainTime);
+            order.setProgress(progress);
+            order.setStatus(status);
+
+            // 调用mapper添加订单
+            orderInfoMapper.addOrder(order);
+
+            res.put("code", 1);
+            res.put("desc", "添加订单成功");
+        } catch (Exception e) {
+            res.put("code", 0);
+            res.put("desc", "添加订单失败");
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+
 }

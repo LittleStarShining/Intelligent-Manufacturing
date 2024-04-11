@@ -38,6 +38,7 @@
         <result property="orderMoney" column="order_money" />
         <result property="ddl" column="ddl" />
         <result property="lineID" column="line_id" />
+        <result property="orderNum" column="order_num" />
     </resultMap>
 
     <resultMap id="orderDetailInfo" type="com.gene.IM.entity.OrderInfo">
@@ -49,14 +50,15 @@
         <result property="orderMoney" column="order_money" />
         <result property="remainTime" column="remain_time" />
         <result property="progress" column="progress" />
-        <result property="material" column="material" />
         <result property="lineID" column="line_id" />
         <result property="priority" column="priority" />
     </resultMap>
 
-    <resultMap id="orderDetailInfo" type="com.gene.IM.DTO.HistoryReportGraph">
-        <result property="month" column="" />
-
+    <resultMap id="historyReportGraph" type="com.gene.IM.DTO.HistoryReportGraph">
+        <result property="month" column="month" />
+        <result property="lineID" column="lineID" />
+        <result property="totalMonthMoney" column="total_order_money" />
+        <result property="totalMonthNum" column="total_order_num" />
     </resultMap>
 
 
@@ -97,7 +99,7 @@
     </select>
 
     <select id="getOrderDetail" resultMap="orderDetailInfo">
-        SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money, o.order_time,o.ddl,o.material,o.progress,o.remain_time
+        SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money, o.order_time,o.ddl,o.progress,o.remain_time
         FROM `order` o
                  LEFT JOIN belong_line_order ol ON o.id = ol.order_id
         WHERE o.id = #{orderID};
@@ -151,7 +153,7 @@
 
 
     <select id="getDoneTask" resultMap="doneOrderListInfo">
-        SELECT o.id, o.type_name, blo.line_id, o.order_money, o.ddl
+        SELECT o.id, o.type_name, blo.line_id, o.order_money, o.ddl, o.order_num
         FROM `order` o
                  LEFT JOIN belong_line_order blo ON o.id = blo.order_id
         WHERE o.status = '已完成';
@@ -163,9 +165,34 @@
         WHERE id = #{orderID};
     </update>
 
+    <select id="genGraph" resultMap="historyReportGraph">
+        SELECT
+            MONTH(o.order_time) AS month,
+            blo.line_id AS lineID,
+            SUM(o.order_money) AS total_order_money,
+            SUM(o.order_num) AS total_order_num
+        FROM
+            belong_line_order blo
+            JOIN
+            `order` o ON blo.order_id = o.id
+        WHERE
+            blo.line_id = #{lineID} -- 使用传入的 lineID 参数
+          AND MONTH(o.order_time) = #{month} -- 使用传入的 month 参数
+        GROUP BY
+            month,
+            lineID;
+    </select>
 
+    <insert id="addOrder" parameterType="com.gene.IM.entity.OrderInfo">
+        INSERT INTO `order` (typeName, orderTime, ddl, orderNum, orderMoney, sumTime, remainTime, progress, status)
+        VALUES (#{typeName}, #{orderTime}, #{ddl}, #{orderNum}, #{orderMoney}, #{sumTime}, #{remainTime}, #{progress}, #{status});
+    </insert>
 
-
+    <update id="changeStatusByLineID" parameterType="map">
+        UPDATE `order`
+        SET status = #{status}
+        WHERE id IN (SELECT order_id FROM order_line WHERE lineID = #{lineID})
+    </update>
 
 
 
