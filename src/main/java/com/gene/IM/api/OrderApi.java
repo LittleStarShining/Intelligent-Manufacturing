@@ -54,5 +54,12 @@ public class OrderApi {
         return orderService.showDoneList();
     }
 
+    @NotNeedJWT
+    @GetMapping("/hello")
+    public void test(){
+        System.out.println(orderService.getPriority(4));
+
+    }
+
 
 }

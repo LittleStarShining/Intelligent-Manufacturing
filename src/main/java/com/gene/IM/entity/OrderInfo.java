@@ -18,6 +18,16 @@ public class OrderInfo {
     private String status;
     private int lineID;
 
+    public double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(double priority) {
+        this.priority = priority;
+    }
+
+    private double priority;
+
 
     public int getOrderID() {
         return orderID;

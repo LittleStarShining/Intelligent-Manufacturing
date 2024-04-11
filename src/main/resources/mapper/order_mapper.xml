@@ -51,7 +51,15 @@
         <result property="progress" column="progress" />
         <result property="material" column="material" />
         <result property="lineID" column="line_id" />
+        <result property="priority" column="priority" />
     </resultMap>
+
+    <resultMap id="orderDetailInfo" type="com.gene.IM.DTO.HistoryReportGraph">
+        <result property="month" column="" />
+
+    </resultMap>
+
+
 
     <select id="getTodayTask" resultMap="orderIndex">
         SELECT o.id AS order_id, o.order_num, ol.line_id
@@ -148,6 +156,12 @@
                  LEFT JOIN belong_line_order blo ON o.id = blo.order_id
         WHERE o.status = '已完成';
     </select>
+
+    <update id="setPriority">
+        UPDATE `order`
+        SET priority = #{priority}
+        WHERE id = #{orderID};
+    </update>
 
 
 

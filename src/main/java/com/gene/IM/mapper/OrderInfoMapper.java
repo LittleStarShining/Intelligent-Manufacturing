@@ -1,5 +1,6 @@
 package com.gene.IM.mapper;
 
+import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.DTO.OrderIndex;
 import com.gene.IM.DTO.TodayProgress;
 import com.gene.IM.entity.OrderInfo;
@@ -29,7 +30,9 @@ public interface OrderInfoMapper {
     // 模糊搜索
     public List<OrderInfo> vagueSelect(@Param("source")String source, @Param("key") String key);
 
+    public void setPriority(@Param("order")int orderId,@Param("priority") double priority);
 
+    public HistoryReportGraph genGraph(@Param("month")int month, @Param("lineID")int lineID);
 
 
 
