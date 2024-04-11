@@ -1,10 +1,15 @@
 package com.gene.IM.api;
 
+import cn.hutool.json.JSONObject;
+import com.gene.IM.DTO.OrderIndex;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
+import com.gene.IM.entity.CommonResult;
+import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -53,6 +58,21 @@ public class OrderApi {
     public Map<String,Object> showDoneList(){
         return orderService.showDoneList();
     }
+    @NotNeedJWT
+    @GetMapping("/greedyAssign")
+    public CommonResult<JSONObject> greedyAssign(){
+        JSONObject json = new JSONObject();
+        int line = 1;
+        for(List<OrderInfo> line_order:orderService.greedyAssign()){
+            for(OrderInfo order: line_order){
+                json.append("line"+line,order);
+            }
+        line++;
+        }
+            return new CommonResult<JSONObject>(json);
+    }
+
+
 
 
 

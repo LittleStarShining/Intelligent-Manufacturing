@@ -2,10 +2,7 @@ package com.gene.IM.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.gene.IM.DTO.DeviceInfo;
-import com.gene.IM.entity.CommonResult;
 import com.gene.IM.entity.Device;
-import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.DeviceMapper;
 import com.gene.IM.sendclient.Send_Client1;
 import com.gene.IM.service.DeviceService;
@@ -89,7 +86,7 @@ public class DeviceServiceImpl implements DeviceService {
                 Double averageTemperature = temperatureSum / count;
                 Double averageHumidity = humiditySum / count;
                 Double averageFlame = flameSum / count;
-                json.set("hum", averageHumidity).set("temp", averageTemperature).set("flame",averageFlame ).set("count", count);
+                json.set("hum", averageHumidity).set("temp", averageTemperature).set("gas",averageFlame ).set("count", count);
             }
         }
 
@@ -103,5 +100,13 @@ public class DeviceServiceImpl implements DeviceService {
 //        jsonArray.add(new JSONObject().set("line", 2).set("pass", line1_num * 1.0 / line2OrderNum));
 //        jsonArray.add(new JSONObject().set("line", 3).set("pass", line1_num * 1.0 / line3OrderNum));
         return new JSONObject().set("流水线通过率", jsonArray);
+    }
+    @Override
+    public JSONArray getPassInNum() {
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(new JSONObject().set("line", 1).set("num",line1_num+"/"+line1OrderNum));
+        jsonArray.add(new JSONObject().set("line", 2).set("line2",line2_num+"/"+line2OrderNum));
+        jsonArray.add(new JSONObject().set("line", 3).set("line3",line3_num+"/"+line3OrderNum));
+        return jsonArray;
     }
 }

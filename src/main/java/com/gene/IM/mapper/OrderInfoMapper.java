@@ -30,13 +30,11 @@ public interface OrderInfoMapper {
     // 模糊搜索
     public List<OrderInfo> vagueSelect(@Param("source")String source, @Param("key") String key);
 
-    public void setPriority(@Param("orderID")int orderId,@Param("priority") double priority);
+    public void setPriority(@Param("order")int orderId,@Param("priority") double priority);
 
     public HistoryReportGraph genGraph(@Param("month")int month, @Param("lineID")int lineID);
 
-    public void addOrder(OrderInfo order);
 
-    public void changeStatusByLineID(@Param("lineID") int lineID);
 
 
 

@@ -41,17 +41,12 @@
         </delete>
 
     <!-- 获取某流水线制作商品信息 -->
-    <select id="getLineOrderDetail" resultType="com.gene.IM.entity.OrderInfo">
+    <select id="getLineOrderDetail" resultMap="com.gene.IM.mapper.OrderInfoMapper.orderDetailInfo">
         SELECT o.id, o.type_name, o.order_num, o.order_money, o.order_time,o.ddl
         FROM `order` o
                  LEFT JOIN order_line ol ON o.id = ol.order_id
         WHERE ol.line_id = #{lineID};
     </select>
 
-    <!-- 通过line获取当前订单中制作一瓶商品所需的原料id和数量 -->
-    <select id="getLineOrderMaterial" resultType="com.gene.IM.DTO.MaterialDTO">
-        SELECT material_id, quantity
-        FROM drink_material
-        WHERE drink_id = (SELECT type FROM `order` WHERE id = (SELECT order_id FROM order_line WHERE line_id = #{lineID}));
-</select>
+
 </mapper>

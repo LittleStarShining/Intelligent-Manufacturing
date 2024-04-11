@@ -6,8 +6,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
 import com.gene.IM.entity.CommonResult;
-import com.gene.IM.entity.Material;
-import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.DeviceMapper;
 import com.gene.IM.sendclient.Send_Client1;
 import com.gene.IM.service.DeviceService;
@@ -16,15 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import static com.gene.IM.receiveclient.MqttAcceptCallback.macSet;
-import static com.gene.IM.receiveclient.MqttAcceptCallback.massageQueue;
 
 
 // 之前任务需要，后续可更改
@@ -41,6 +34,9 @@ public class MqttApi {
     public static int line1OrderNum;
     public static int line2OrderNum;
     public static int line3OrderNum;
+    //是否火灾
+    public static int isFire;
+    public static int isWaterErorr;
     /**
      *  http:/localhost:9091/sendmsg
      */
@@ -82,9 +78,7 @@ public class MqttApi {
             allDevices.append("设备",new JSONObject(macElement));
         }
 
-        line1OrderNum = deviceMapper.getLineOrderDetail(1).getOrderNum();
-        line2OrderNum = deviceMapper.getLineOrderDetail(2).getOrderNum();
-        line3OrderNum = deviceMapper.getLineOrderDetail(3).getOrderNum();
+
         return allDevices;
         /*
         {
@@ -107,6 +101,9 @@ public class MqttApi {
     public CommonResult<List<String>> connectDevices(@RequestBody JSONArray devices) {
         connect=true;
         System.out.println(devices);
+        line1OrderNum = deviceMapper.getLineOrderDetail(1).getOrderNum();
+        line2OrderNum = deviceMapper.getLineOrderDetail(2).getOrderNum();
+        line3OrderNum = deviceMapper.getLineOrderDetail(3).getOrderNum();
         return new CommonResult<List<String>>(deviceService.connectDevices(devices));
 
     }
@@ -137,6 +134,23 @@ public class MqttApi {
 
         return new CommonResult<JSONObject>(deviceService.getPass());
 
+
+    }
+
+    @NotNeedJWT
+    @GetMapping("/getPassInNum")
+    public CommonResult<JSONArray> getPassInNum() {
+
+        return new CommonResult<JSONArray>(deviceService.getPassInNum(),"消毒节点通过数量");
+
+
+    }
+
+    @NotNeedJWT
+    @GetMapping("/getFire")
+    public CommonResult<JSONObject> getFire() {
+        JSONObject fireJSON = new JSONObject().set("isFire",isFire);
+        return new CommonResult<JSONObject>(fireJSON);
 
     }
 

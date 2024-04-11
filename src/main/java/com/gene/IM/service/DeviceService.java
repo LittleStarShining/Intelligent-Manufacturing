@@ -38,4 +38,6 @@ public interface DeviceService {
     public JSONObject getHumTempGas();
 
     public JSONObject getPass();
+
+    public JSONArray getPassInNum();
 }

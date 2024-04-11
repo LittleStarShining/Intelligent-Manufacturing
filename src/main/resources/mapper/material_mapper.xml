@@ -64,20 +64,30 @@
     </update>
 
     <!-- decreaseMaterial Query -->
-    <update id="decreaseMaterial" >
+    <update id="decreaseMaterial" parameterType="map">
         UPDATE material
         <set>
             <if test="num != null">
                 num = num - #{num},
-            </if>
-            <if test="cumulation != null">
-                cumulation = cumulation + #{cumulation},
+                cumulation = cumulation + #{num},
             </if>
                 update_date = CURRENT_DATE
         </set>
         WHERE material_id = #{materialId}
     </update>
 
+
+    <update id="updateMaterialNeed">
+    UPDATE material m
+    JOIN (
+    SELECT dm.material_id, SUM(o.order_num * dm.quantity) AS total_need
+    FROM drink_material dm
+    JOIN `order` o ON dm.drink_id = o.type
+    WHERE o.status = '等候'
+    GROUP BY dm.material_id
+    ) AS need_update ON m.material_id = need_update.material_id
+    SET m.need = need_update.total_need;
+    </update>
 
     <!-- Delete Query -->
     <delete id="deleteById" parameterType="Integer">
@@ -112,4 +122,10 @@
         WHERE material_id = #{materialId}
     </select>
 
+    <!-- 通过line获取当前订单中制作一瓶商品所需的原料id和数量 -->
+    <select id="getLineOrderMaterial" resultType="com.gene.IM.DTO.MaterialDTO">
+        SELECT material_id AS materialId, quantity
+        FROM drink_material
+        WHERE drink_id = (SELECT type FROM `order` WHERE id = (SELECT order_id FROM order_line WHERE line_id = #{lineID}));
+    </select>
 </mapper>

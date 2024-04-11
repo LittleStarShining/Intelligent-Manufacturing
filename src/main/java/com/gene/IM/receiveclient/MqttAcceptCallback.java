@@ -3,6 +3,7 @@ package com.gene.IM.receiveclient;
 import cn.hutool.db.Db;
 import cn.hutool.json.JSONObject;
 
+import cn.hutool.json.JSONUtil;
 import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.MaterialMapper;
@@ -26,10 +27,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import static com.gene.IM.api.MqttApi.connect;
+import static com.gene.IM.api.MqttApi.*;
 
 // 之前任务需要，后续可更改
 @Component
@@ -148,38 +150,87 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 //            }
         }
         //获取收到的硬件设备信息
-        else if(topic.equals("publish")) {
+        else if(topic.equals("publish1")) {
 //            mac.get()
-            if(!macSet.contains(mqttMessage.toString())){
-                macSet.add(mqttMessage.toString());
+            //若未连接
+            if(!connect) {
+                if (!macSet.contains(mqttMessage.toString())) {
+                    macSet.add(mqttMessage.toString());
+                }
+                System.out.println("未连接");
+                System.out.println(macSet);
             }
-            System.out.println(macSet);
-            //如果已经连接
-            if(connect){
-                JSONObject json = new JSONObject(mqttMessage.toString());
+            //如果已经连接,将消息转为json存到messageQueue中
+            else{
+                int num_temp1 = line1_num;
+                int num_temp2 = line2_num;
+                int num_temp3 = line3_num;
+                System.out.println("---------已连接--------");
+                JSONObject json = JSONUtil.parseObj(mqttMessage.toString());
+                System.out.println("---------已连接--------接收到的json："+json);
+//                massageQueue.add(json);
+                int mac = json.getInt("Mac");
+                System.out.println("mac:" + mac);
+                System.out.println("mac/3:"+mac/3);
                 //获取通过瓶数，并更新material表的数量
-                if (json.getStr("Mac").equals("001")) {
-                    int num_temp1 = line1_num;
-                    int num_temp2 = line2_num;
-                    int num_temp3 = line3_num;
-                    if(json.getInt("line")==1){
+                if (mac %3==1) {
+                    System.out.println("mac%3=1:");
+
+                    if(mac/3==0){
+                        System.out.println("mac/3=0:");
                         line1_num = json.getInt("Num");
-                        MaterialDTO m = materialMapper.getLineOrderMaterial(1);
+                        if(line1_num==line1OrderNum){
+
+                            materialMapper.updateMaterialNeed();
+                        }
+                        System.out.println("line1_num:"+line1_num);
+                        List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(1);
+                        System.out.println(materials);
+                        for(MaterialDTO m:materials){
+                        System.out.println("减的个数:"+m.getQuantity()*(line1_num-num_temp1));
                         materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line1_num-num_temp1));
+
+                        }
                         num_temp1 = line1_num;
                     }
-                    else if(json.getInt("line")==2){
+                    else if(mac/3==1){
                         line2_num = json.getInt("Num");
-                        MaterialDTO m = materialMapper.getLineOrderMaterial(2);
-                        materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line2_num-num_temp2));
+                        if(line2_num==line2OrderNum){
+
+                            materialMapper.updateMaterialNeed();
+                        }
+                        List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(2);
+                        for(MaterialDTO m:materials) {
+                            materialMapper.decreaseMaterial(m.getMaterialId(), m.getQuantity() * (line2_num - num_temp2));
+
+                        }
                         num_temp2 = line2_num;
                     }
-                    else if(json.getInt("line")==3){
+                    else if(mac/3==2){
                         line3_num = json.getInt("Num");
-                        MaterialDTO m = materialMapper.getLineOrderMaterial(3);
-                        materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line3_num-num_temp3));
+                        if(line3_num==line3OrderNum){
+
+                            materialMapper.updateMaterialNeed();
+                        }
+                        List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(3);
+
+                        for(MaterialDTO m:materials) {
+                            materialMapper.decreaseMaterial(m.getMaterialId(), m.getQuantity() * (line3_num - num_temp3));
+
+                        }
                         num_temp3 = line3_num;
+
                     }
+
+                }
+                //获取火灾
+                if (json.getStr("Mac").equals("0")) {
+                    isFire = json.getInt("Fire");
+
+                }
+                //获取水位
+                if (json.getStr("Mac").equals("2")) {
+                    isWaterErorr = json.getInt("Water_State");
 
                 }
                 if (!massageQueue.offer(json)) {
@@ -190,6 +241,8 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                     massageQueue.offer(json);
 
                 }
+                System.out.println("massageQueue" + massageQueue);
+
             }
         	 
         }
@@ -231,6 +284,6 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         // 以/#结尾表示订阅所有以test开头的主题
         // 订阅所有机构主题
 //        mqttAcceptClient.subscribe("testtopic/#", 0);
-        mqttAcceptClient.subscribe("publish", 0);
+        mqttAcceptClient.subscribe("publish1", 0);
     }
 }
