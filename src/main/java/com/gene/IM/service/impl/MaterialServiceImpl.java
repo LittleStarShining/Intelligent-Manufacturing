@@ -1,5 +1,6 @@
 package com.gene.IM.service.impl;
 
+import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.entity.Material;
 import com.gene.IM.mapper.MaterialMapper;
@@ -49,5 +50,11 @@ public Material update(Material material) {
     @Override
     public int deleteById(Integer materialId) {
         return materialMapper.deleteById(materialId);
+    }
+
+    @Override
+    public List<MaterialDTO> getInferById(Integer id) {
+
+        return materialMapper.getInferById(id);
     }
 }

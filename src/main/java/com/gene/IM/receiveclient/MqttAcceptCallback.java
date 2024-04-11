@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.MaterialMapper;
+import com.gene.IM.mapper.OrderInfoMapper;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -50,6 +51,9 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
     private MqttAcceptClient mqttAcceptClient;
     @Autowired
     private MaterialMapper materialMapper;
+
+    @Autowired
+    private OrderInfoMapper orderInfoMapper;
     @Autowired
     @Qualifier("send_Client1")
     private Send_Client1  client8;
@@ -150,7 +154,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 //            }
         }
         //获取收到的硬件设备信息
-        else if(topic.equals("publish1")) {
+        else if(topic.equals("publish")) {
 //            mac.get()
             //若未连接
             if(!connect) {
@@ -180,7 +184,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         System.out.println("mac/3=0:");
                         line1_num = json.getInt("Num");
                         if(line1_num==line1OrderNum){
-
+                            orderInfoMapper.changeStatusByLineID(1);
                             materialMapper.updateMaterialNeed();
                         }
                         System.out.println("line1_num:"+line1_num);
@@ -196,7 +200,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                     else if(mac/3==1){
                         line2_num = json.getInt("Num");
                         if(line2_num==line2OrderNum){
-
+                            orderInfoMapper.changeStatusByLineID(2);
                             materialMapper.updateMaterialNeed();
                         }
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(2);
@@ -209,7 +213,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                     else if(mac/3==2){
                         line3_num = json.getInt("Num");
                         if(line3_num==line3OrderNum){
-
+                            orderInfoMapper.changeStatusByLineID(3);
                             materialMapper.updateMaterialNeed();
                         }
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(3);
@@ -284,6 +288,6 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         // 以/#结尾表示订阅所有以test开头的主题
         // 订阅所有机构主题
 //        mqttAcceptClient.subscribe("testtopic/#", 0);
-        mqttAcceptClient.subscribe("publish1", 0);
+        mqttAcceptClient.subscribe("publish", 0);
     }
 }

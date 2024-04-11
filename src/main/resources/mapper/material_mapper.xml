@@ -14,6 +14,18 @@
         <result property="updateDate" column="update_date" />
     </resultMap>
 
+    <resultMap id="materialDTOResultMap" type="com.gene.IM.DTO.MaterialDTO">
+        <id property="materialId" column="material_id" />
+        <result property="name" column="name" />
+        <result property="year" column="year" />
+        <result property="month" column="month" />
+        <result property="quantity" column="num" />
+        <result property="cumulation" column="cumulation" />
+        <result property="need" column="need" />
+        <result property="infer" column="infer" />
+        <result property="previousConsume" column="consume" />
+    </resultMap>
+
     <!-- Select Query -->
     <select id="find" parameterType="com.gene.IM.DTO.SelectMaterial" resultMap="materialResultMap">
         SELECT * FROM material
@@ -40,6 +52,10 @@
         </where>
     </select>
 
+<!--获取本月原料累积消耗量cumulation，根据订单计算原料需要量need，以往年份的消耗量。-->
+    <select id="getInferById" parameterType="Integer" resultMap="materialDTOResultMap">
+        SELECT m.name,m.num,m.material_id,m.need,m.cumulation, mi.`month`,mi.`year`,mi.consume FROM material m JOIN infer_material mi ON m.material_id = mi.material where m.material_id = #{id}
+    </select>
 
     <!-- Update Query -->
     <update id="update" parameterType="com.gene.IM.entity.Material" >

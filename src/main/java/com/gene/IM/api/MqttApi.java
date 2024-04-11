@@ -75,7 +75,7 @@ public class MqttApi {
 //            allDevices.append("设备",macSet);
 //        }
         for (String macElement : macSet) {
-            allDevices.append("设备",new JSONObject(macElement));
+            allDevices.append("device",new JSONObject(macElement));
         }
 
 

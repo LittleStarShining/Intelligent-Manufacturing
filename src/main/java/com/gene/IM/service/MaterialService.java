@@ -1,5 +1,6 @@
 package com.gene.IM.service;
 
+import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.entity.Material;
 
@@ -17,4 +18,7 @@ public interface MaterialService {
     Material update(Material material);
 
     int deleteById(Integer materialId);
+
+
+    List<MaterialDTO> getInferById(Integer id);
 }

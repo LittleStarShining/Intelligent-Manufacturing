@@ -24,4 +24,6 @@ public interface MaterialMapper {
     int deleteById(Integer materialId);
 
     int updateMaterialNeed();
+
+    List<MaterialDTO> getInferById(Integer id);
 }

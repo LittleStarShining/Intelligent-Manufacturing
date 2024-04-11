@@ -1,5 +1,6 @@
 package com.gene.IM.api;
 
+import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
 import com.gene.IM.entity.CommonResult;
@@ -37,6 +38,17 @@ public class MaterialApi{
         return new CommonResult<List<Material>>().failed(result, "查询结果为空，");
 
     }
+
+    @NotNeedJWT
+    @GetMapping("/getInferById")
+
+    public CommonResult<List<MaterialDTO>> getInferById(@RequestParam("id") int id) {
+        List<MaterialDTO> result = materialService.getInferById(id);
+        //查询结果为空
+        return new CommonResult<List<MaterialDTO>>(result);
+
+    }
+
 
     @NotNeedJWT
     @PostMapping("/add")
