@@ -29,11 +29,8 @@ public interface OrderService {
     // 获得最优先订单
     public OrderInfo getHighestPriorityOrder();
 
-
     public List<HistoryReportGraph> getGraphData();
-
     public Map<String,Object> showHistoryReport();
-
     public Map<String, Object> addOrder(OrderInfo request);
 
 

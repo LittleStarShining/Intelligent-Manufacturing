@@ -38,6 +38,13 @@ public interface OrderInfoMapper {
 
     public void changeStatusByLineID(@Param("lineID") int lineID);
 
+    public void changeStatusByOrderID(@Param("orderID")int orderID,@Param("status") String status);
+    public void changeLineWorkingOrder(@Param("lineID")int lineID,@Param("orderID") int orderID);
+    public void addBelongLineOrder(@Param("order")int lineID, @Param("lineID")int orderID);
+
+
+
+
 
 
 }

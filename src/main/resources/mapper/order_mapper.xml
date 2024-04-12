@@ -190,11 +190,31 @@
         WHERE di.drink_name = #{typeName};
     </insert>
 
-    <update id="changeStatusByLineID" parameterType="map">
+    <update id="changeStatusByLineID">
         UPDATE `order`
-        SET status = #{status}
+        SET status = '已完成'
         WHERE id IN (SELECT order_id FROM order_line WHERE lineID = #{lineID})
     </update>
+
+    <update id="changeStatusByOrderID">
+        UPDATE `order`
+        SET status = #{status}
+        WHERE order_id = #{orderID};
+    </update>
+    <update id="changeLineWorkingOrder">
+        UPDATE `order_line`
+        SET order_id = #{orderID}
+        WHERE line_id = #{lineID};
+    </update>
+    <update id="addBelongLineOrder">
+        INSERT INTO `belong_line_order` (order_id,line_id)
+        VALUES (#{orderID},#{lineID});
+    </update>
+
+
+
+
+
 
 
 

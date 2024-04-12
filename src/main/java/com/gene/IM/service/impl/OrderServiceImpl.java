@@ -210,6 +210,7 @@ public class OrderServiceImpl implements OrderService {
         for (OrderInfo orderInfo : orderInfos) {
             double priority = getPriority(orderInfo.getOrderID());
             orderInfo.setPriority(priority);
+            orderInfoMapper.setPriority(orderInfo.getOrderID(),priority);
             priorityQueue.add(orderInfo);
         }
         return priorityQueue;
@@ -305,7 +306,7 @@ public class OrderServiceImpl implements OrderService {
             // 修改Need
             materialMapper.updateMaterialNeed();
             // 重分配优先级
-            greedyAssign();
+            this.getPriorityQueue();
 
             res.put("code", 1);
             res.put("desc", "添加订单成功");

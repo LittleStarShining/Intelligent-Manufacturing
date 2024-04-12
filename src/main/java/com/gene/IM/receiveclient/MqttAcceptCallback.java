@@ -8,6 +8,7 @@ import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.mapper.OrderInfoMapper;
+import com.gene.IM.service.OrderService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -57,6 +58,9 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
     @Autowired
     @Qualifier("send_Client1")
     private Send_Client1  client8;
+
+    @Autowired
+    private OrderService orderService;
     
     
     @Autowired
@@ -186,6 +190,11 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         if(line1_num==line1OrderNum){
                             orderInfoMapper.changeStatusByLineID(1);
                             materialMapper.updateMaterialNeed();
+                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
+                            OrderInfo nextTask = nowList.get(0).get(0);
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"已完成");
+                            orderInfoMapper.changeLineWorkingOrder(1,nextTask.getOrderID());
+                            orderInfoMapper.addBelongLineOrder(1,nextTask.getOrderID());
                         }
                         System.out.println("line1_num:"+line1_num);
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(1);
@@ -202,6 +211,11 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         if(line2_num==line2OrderNum){
                             orderInfoMapper.changeStatusByLineID(2);
                             materialMapper.updateMaterialNeed();
+                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
+                            OrderInfo nextTask = nowList.get(1).get(0);
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"已完成");
+                            orderInfoMapper.changeLineWorkingOrder(2,nextTask.getOrderID());
+                            orderInfoMapper.addBelongLineOrder(2,nextTask.getOrderID());
                         }
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(2);
                         for(MaterialDTO m:materials) {
@@ -215,6 +229,11 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         if(line3_num==line3OrderNum){
                             orderInfoMapper.changeStatusByLineID(3);
                             materialMapper.updateMaterialNeed();
+                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
+                            OrderInfo nextTask = nowList.get(2).get(0);
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"已完成");
+                            orderInfoMapper.changeLineWorkingOrder(3,nextTask.getOrderID());
+                            orderInfoMapper.addBelongLineOrder(3,nextTask.getOrderID());
                         }
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(3);
 
