@@ -2,6 +2,7 @@ package com.gene.IM.service.impl;
 
 import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.entity.OrderInfo;
+import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.mapper.OrderInfoMapper;
 import com.gene.IM.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderInfoMapper orderInfoMapper;
+    @Autowired
+    private MaterialMapper materialMapper;
 
     @Override
     public Map<String, Object> showWaitingList() {
@@ -299,6 +302,10 @@ public class OrderServiceImpl implements OrderService {
 
             // 调用mapper添加订单
             orderInfoMapper.addOrder(order);
+            // 修改Need
+            materialMapper.updateMaterialNeed();
+            // 重分配优先级
+            greedyAssign();
 
             res.put("code", 1);
             res.put("desc", "添加订单成功");

@@ -1,6 +1,7 @@
 package com.gene.IM.api;
 
 import com.gene.IM.JWT.annotation.NotNeedJWT;
+import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,8 +54,10 @@ public class OrderApi {
     public Map<String,Object> showDoneList(){
         return orderService.showDoneList();
     }
-
-
-
+    @NotNeedJWT
+    @PostMapping("/addNewOrder")
+    public Map<String,Object> addNewOrder(@RequestBody OrderInfo o){
+        return orderService.addOrder(o);
+    }
 
 }

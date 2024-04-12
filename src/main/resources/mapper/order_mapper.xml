@@ -184,8 +184,10 @@
     </select>
 
     <insert id="addOrder" parameterType="com.gene.IM.entity.OrderInfo">
-        INSERT INTO `order` (typeName, orderTime, ddl, orderNum, orderMoney, sumTime, remainTime, progress, status)
-        VALUES (#{typeName}, #{orderTime}, #{ddl}, #{orderNum}, #{orderMoney}, #{sumTime}, #{remainTime}, #{progress}, #{status});
+        INSERT INTO `order` (type, type_name, order_time, ddl, order_Num, order_money, sum_time, remain_time, progress, status)
+        SELECT di.drink_id, #{typeName}, #{orderTime}, #{ddl}, #{orderNum}, #{orderMoney}, #{sumTime}, #{remainTime}, #{progress}, #{status}
+        FROM drink_info di
+        WHERE di.drink_name = #{typeName};
     </insert>
 
     <update id="changeStatusByLineID" parameterType="map">
@@ -193,6 +195,8 @@
         SET status = #{status}
         WHERE id IN (SELECT order_id FROM order_line WHERE lineID = #{lineID})
     </update>
+
+
 
 
 
