@@ -5,6 +5,7 @@ import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.entity.Material;
 import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.service.MaterialService;
+import com.gene.IM.util.TripleExponentialImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +55,11 @@ public Material update(Material material) {
 
     @Override
     public List<MaterialDTO> getInferById(Integer id) {
-
         return materialMapper.getInferById(id);
+    }
+
+    @Override
+    public double[] getAllConsumes(Integer materialId) {
+        return materialMapper.getAllConsumes(materialId);
     }
 }

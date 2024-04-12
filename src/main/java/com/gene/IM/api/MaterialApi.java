@@ -5,7 +5,9 @@ import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
 import com.gene.IM.entity.CommonResult;
 import com.gene.IM.entity.Material;
+import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.service.MaterialService;
+import com.gene.IM.util.TripleExponentialImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,9 @@ public class MaterialApi{
 
     @Autowired
     private MaterialService materialService;
+    @Autowired
+    private MaterialMapper materialMapper;
+    private TripleExponentialImpl tripleExponential;
 
     @NotNeedJWT
     @GetMapping("getid/{materialId}")
@@ -44,6 +49,17 @@ public class MaterialApi{
 
     public CommonResult<List<MaterialDTO>> getInferById(@RequestParam("id") int id) {
         List<MaterialDTO> result = materialService.getInferById(id);
+        double[] real = materialMapper.getAllConsumes(id);
+        double alpha = 0.1, beta = 0.45, gamma = 0;
+        int period = 12, m = 1;
+        boolean debug = false;
+        double[] predict = TripleExponentialImpl.forecast(real, alpha, beta, gamma, period, m, debug);
+        System.out.println("-----------predict----------------------------------");
+        for (int i = real.length; i < predict.length; i++) {
+            result.get(0).setInfer(predict[i]);
+            System.out.println(predict[i]);
+        }
+
         //查询结果为空
         return new CommonResult<List<MaterialDTO>>(result);
 
@@ -69,6 +85,21 @@ public class MaterialApi{
         return new CommonResult<Material>(materialService.update(material));
     }
 
+
+    @NotNeedJWT
+    @GetMapping("/getPredict")
+    public void test(){
+        double[] real = { 362, 385, 432, 341, 382, 409, 498, 387, 473, 513, 582, 600,362, 385, 432, 341, 382, 409, 498, 387, 473, 513, 582, 600,100};
+        double alpha = 0.1, beta = 0.45, gamma = 0;
+        int period = 12, m = 1;
+        boolean debug = false;
+        double[] predict = TripleExponentialImpl.forecast(real, alpha, beta, gamma, period, m, debug);
+        System.out.println("-----------predict----------------------------------");
+        for(int i = real.length; i < predict.length; i++){
+            System.out.println(predict[i]);
+        }
+
+    }
 
     @NotNeedJWT
     @DeleteMapping("delete/{materialId}")

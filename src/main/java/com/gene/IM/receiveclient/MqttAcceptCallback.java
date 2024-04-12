@@ -180,6 +180,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                 int mac = json.getInt("Mac");
                 System.out.println("mac:" + mac);
                 System.out.println("mac/3:"+mac/3);
+
                 //获取通过瓶数，并更新material表的数量
                 if (mac %3==1) {
                     System.out.println("mac%3=1:");
@@ -249,6 +250,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                 //获取火灾
                 if (json.getStr("Mac").equals("0")) {
                     isFire = json.getInt("Fire");
+                    System.out.println("isFire:"+isFire);
 
                 }
                 //获取水位

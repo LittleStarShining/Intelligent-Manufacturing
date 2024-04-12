@@ -26,4 +26,6 @@ public interface MaterialMapper {
     int updateMaterialNeed();
 
     List<MaterialDTO> getInferById(Integer id);
+
+    public double[] getAllConsumes(Integer materialId);
 }

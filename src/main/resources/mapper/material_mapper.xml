@@ -52,6 +52,13 @@
         </where>
     </select>
 
+<!--    获取以往消耗量用以预测-->
+    <select id="getAllConsumes" resultType="double">
+        SELECT consume
+        FROM infer_material
+where material = #{materialId}
+    </select>
+
 <!--获取本月原料累积消耗量cumulation，根据订单计算原料需要量need，以往年份的消耗量。-->
     <select id="getInferById" parameterType="Integer" resultMap="materialDTOResultMap">
         SELECT m.name,m.num,m.material_id,m.need,m.cumulation, mi.`month`,mi.`year`,mi.consume FROM material m JOIN infer_material mi ON m.material_id = mi.material where m.material_id = #{id}

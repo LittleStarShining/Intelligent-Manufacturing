@@ -20,4 +20,6 @@ public interface MaterialService {
     int deleteById(Integer materialId);
 
     List<MaterialDTO> getInferById(Integer id);
+
+    public double[] getAllConsumes(Integer materialId);
 }

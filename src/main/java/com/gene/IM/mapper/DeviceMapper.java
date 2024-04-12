@@ -5,6 +5,8 @@ import com.gene.IM.entity.Device;
 import com.gene.IM.entity.OrderInfo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Map;
+
 @Mapper
 public interface DeviceMapper {
 
@@ -15,4 +17,7 @@ public interface DeviceMapper {
     public int updateDevice(Device device);
     public int deleteDevice(String mac);
     public OrderInfo getLineOrderDetail(int lineID);
+    public Map<String,Object> getLineInfo(Integer lineId);
+
+
 }

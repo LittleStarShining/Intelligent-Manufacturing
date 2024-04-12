@@ -40,4 +40,6 @@ public interface DeviceService {
     public JSONObject getPass();
 
     public JSONArray getPassInNum();
+
+    public JSONObject getLineInfo(Integer lineId);
 }

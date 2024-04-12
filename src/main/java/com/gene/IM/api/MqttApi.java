@@ -153,6 +153,13 @@ public class MqttApi {
         return new CommonResult<JSONObject>(fireJSON);
 
     }
+    @NotNeedJWT
+    @GetMapping("/getLineInfo")
+    public CommonResult<JSONObject> getLineInfo(Integer lineId) {
+        return new CommonResult<JSONObject>(deviceService.getLineInfo(lineId));
+
+    }
+
 
     @NotNeedJWT
     @GetMapping(value = "/sendmsg")

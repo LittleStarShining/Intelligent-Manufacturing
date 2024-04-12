@@ -48,5 +48,13 @@
         WHERE ol.line_id = #{lineID};
     </select>
 
+    <select id="getLineInfo" resultType="double">
+        SELECT l.status, ol.order_id, o.type_name
+        FROM line l
+                 JOIN order_line ol ON l.id = ol.line_id
+                 JOIN `order` o ON ol.order_id = o.id
+        WHERE l.id = #{lineId};
+    </select>
+
 
 </mapper>

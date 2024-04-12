@@ -2,6 +2,7 @@ package com.gene.IM.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.gene.IM.entity.Device;
 import com.gene.IM.mapper.DeviceMapper;
 import com.gene.IM.sendclient.Send_Client1;
@@ -109,4 +110,24 @@ public class DeviceServiceImpl implements DeviceService {
         jsonArray.add(new JSONObject().set("line", 3).set("line3",line3_num+"/"+line3OrderNum));
         return jsonArray;
     }
+
+    @Override
+    public JSONObject getLineInfo(Integer lineId) {
+        Map<String,Object> m = deviceMapper.getLineInfo(lineId);
+        JSONObject json = new JSONObject(m);
+
+        if(lineId==1) {
+            json.set("passNum", line1_num+"/"+line1OrderNum);
+        }
+        else if(lineId==2) {
+            json.set("passNum", line2_num+"/"+line2OrderNum);
+        }
+        else if(lineId==3) {
+            json.set("passNum", line3_num+"/"+line3OrderNum);
+        }
+
+        return json;
+    }
+
+
 }
