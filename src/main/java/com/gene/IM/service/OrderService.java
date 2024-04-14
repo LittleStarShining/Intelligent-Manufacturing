@@ -33,5 +33,7 @@ public interface OrderService {
     public Map<String,Object> showHistoryReport();
     public Map<String, Object> addOrder(OrderInfo request);
 
+    public Map<String,Object> getScheduleList();
+
 
 }

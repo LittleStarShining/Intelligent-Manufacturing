@@ -193,7 +193,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                             materialMapper.updateMaterialNeed();
                             List<List<OrderInfo>> nowList = orderService.greedyAssign();
                             OrderInfo nextTask = nowList.get(0).get(0);
-                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"已完成");
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"处理中");
                             orderInfoMapper.changeLineWorkingOrder(1,nextTask.getOrderID());
                             orderInfoMapper.addBelongLineOrder(1,nextTask.getOrderID());
                         }
@@ -202,7 +202,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         System.out.println(materials);
                         for(MaterialDTO m:materials){
                         System.out.println("减的个数:"+m.getQuantity()*(line1_num-num_temp1));
-                        materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line1_num-num_temp1));
+                            materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line1_num-num_temp1));
 
                         }
                         num_temp1 = line1_num;

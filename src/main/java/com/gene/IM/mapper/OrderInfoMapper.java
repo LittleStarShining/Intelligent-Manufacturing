@@ -40,11 +40,6 @@ public interface OrderInfoMapper {
 
     public void changeStatusByOrderID(@Param("orderID")int orderID,@Param("status") String status);
     public void changeLineWorkingOrder(@Param("lineID")int lineID,@Param("orderID") int orderID);
-    public void addBelongLineOrder(@Param("order")int lineID, @Param("lineID")int orderID);
-
-
-
-
-
+    public void addBelongLineOrder(@Param("lineID")int lineID, @Param("orderID")int orderID);
 
 }
