@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gene.IM.mapper.OrderInfoMapper">
+    <resultMap id="orderIndex" type="com.gene.IM.DTO.OrderIndex">
+        <result property="id" column="order_id" />
+        <result property="orderNum" column="order_num" />
+        <result property="lineID" column="line_id" />
+    </resultMap>
+
+    <resultMap id="todayProgress" type="com.gene.IM.DTO.TodayProgress">
+        <result property="orderID" column="id" />
+        <result property="orderSum" column="order_num" />
+        <result property="progress" column="progress" />
+    </resultMap>
+
+    <resultMap id="waitingOrderListInfo" type="com.gene.IM.entity.OrderInfo">
+        <result property="orderID" column="id" />
+        <result property="typeName" column="type_name" />
+        <result property="orderMoney" column="order_money" />
+        <result property="orderNum" column="order_num" />
+        <result property="ddl" column="ddl" />
+    </resultMap>
+
+    <resultMap id="doingOrderListInfo" type="com.gene.IM.entity.OrderInfo">
+        <result property="orderID" column="id" />
+        <result property="typeName" column="type_name" />
+        <result property="orderMoney" column="order_money" />
+        <result property="ddl" column="ddl" />
+        <result property="lineID" column="line_id" />
+    </resultMap>
+
+    <resultMap id="doneOrderListInfo" type="com.gene.IM.entity.OrderInfo">
+        <result property="orderID" column="id" />
+        <result property="typeName" column="type_name" />
+        <result property="orderMoney" column="order_money" />
+        <result property="ddl" column="ddl" />
+        <result property="lineID" column="line_id" />
+        <result property="orderNum" column="order_num" />
+    </resultMap>
+
+    <resultMap id="orderDetailInfo" type="com.gene.IM.entity.OrderInfo">
+        <result property="orderID" column="id" />
+        <result property="typeName" column="type_name" />
+        <result property="orderTime" column="order_time" />
+        <result property="ddl" column="ddl" />
+        <result property="orderNum" column="order_num" />
+        <result property="orderMoney" column="order_money" />
+        <result property="remainTime" column="remain_time" />
+        <result property="progress" column="progress" />
+        <result property="lineID" column="line_id" />
+        <result property="priority" column="priority" />
+    </resultMap>
+
+    <resultMap id="historyReportGraph" type="com.gene.IM.DTO.HistoryReportGraph">
+        <result property="month" column="month" />
+        <result property="lineID" column="lineID" />
+        <result property="totalMonthMoney" column="total_order_money" />
+        <result property="totalMonthNum" column="total_order_num" />
+    </resultMap>
+
+
+
+    <select id="getTodayTask" resultMap="orderIndex">
+        SELECT o.id AS order_id, o.order_num, ol.line_id
+        FROM `order` o
+                 INNER JOIN order_line ol ON o.id = ol.order_id
+        WHERE o.status = '处理中';
+    </select>
+
+    <select id="getCompleteRate" resultMap="todayProgress">
+        SELECT o.id, o.order_num, o.progress
+        FROM `order` o
+        WHERE o.status = '处理中';
+    </select>
+
+    <select id="getDoneNum" resultType="int">
+        SELECT COUNT(*) FROM `order`
+        WHERE status = '已完成'
+    </select>
+
+    <select id="getHistorySum" resultType="int">
+        SELECT COUNT(*) FROM `order`;
+    </select>
+
+    <select id="getWaitingTask" resultMap="waitingOrderListInfo">
+        SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
+        FROM `order` o
+        WHERE o.status = '等候';
+    </select>
+
+    <select id="getDoingTask" resultMap="doingOrderListInfo">
+        SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
+        FROM `order` o
+                 INNER JOIN order_line ol ON o.id = ol.order_id
+        WHERE o.status = '处理中';
+    </select>
+
+    <select id="getOrderDetail" resultMap="orderDetailInfo">
+        SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money, o.order_time,o.ddl,o.progress,o.remain_time
+        FROM `order` o
+                 LEFT JOIN belong_line_order ol ON o.id = ol.order_id
+        WHERE o.id = #{orderID};
+    </select>
+
+    <select id="orderBySpecial" resultMap="orderDetailInfo">
+        SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money,o.ddl
+        FROM `order` o
+                 LEFT JOIN order_line ol ON o.id = ol.order_id
+        WHERE o.status = #{sort};
+    </select>
+
+    <select id="WaitingOrderByMoney" resultMap="waitingOrderListInfo">
+        SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
+        FROM `order` o
+        WHERE o.status = '等候'
+        ORDER BY o.order_money DESC;
+    </select>
+
+    <select id="WaitingOrderByDdl" resultMap="waitingOrderListInfo">
+        SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
+        FROM `order` o
+        WHERE o.status = '等候'
+        ORDER BY o.ddl;
+    </select>
+
+    <select id="DoingOrderByMoney" resultMap="doingOrderListInfo">
+        SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
+        FROM `order` o
+                 INNER JOIN order_line ol ON o.id = ol.order_id
+        WHERE o.status = '处理中'
+        ORDER BY o.order_money DESC;
+    </select>
+
+    <select id="DoingOrderByDdl" resultMap="doingOrderListInfo">
+        SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
+        FROM `order` o
+                 INNER JOIN order_line ol ON o.id = ol.order_id
+        WHERE o.status = '处理中'
+        ORDER BY o.ddl;
+    </select>
+
+    <select id="vagueSelect" resultMap="orderDetailInfo">
+        SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl, ol.line_id
+        FROM `order` o
+                 LEFT JOIN belong_line_order ol ON o.id = ol.order_id
+        WHERE o.status = #{source}
+          AND (CAST(o.id AS CHAR) LIKE CONCAT('%', #{key}, '%')
+            OR o.type_name LIKE CONCAT('%', #{key}, '%'));
+    </select>
+
+
+    <select id="getDoneTask" resultMap="doneOrderListInfo">
+        SELECT o.id, o.type_name, blo.line_id, o.order_money, o.ddl, o.order_num
+        FROM `order` o
+                 LEFT JOIN belong_line_order blo ON o.id = blo.order_id
+        WHERE o.status = '已完成';
+    </select>
+
+    <update id="setPriority">
+        UPDATE `order`
+        SET priority = #{priority}
+        WHERE id = #{orderID};
+    </update>
+
+    <select id="genGraph" resultMap="historyReportGraph">
+        SELECT
+            MONTH(o.order_time) AS month,
+            blo.line_id AS lineID,
+            SUM(o.order_money) AS total_order_money,
+            SUM(o.order_num) AS total_order_num
+        FROM
+            belong_line_order blo
+            JOIN
+            `order` o ON blo.order_id = o.id
+        WHERE
+            blo.line_id = #{lineID} -- 使用传入的 lineID 参数
+          AND MONTH(o.order_time) = #{month} -- 使用传入的 month 参数
+        GROUP BY
+            month,
+            lineID;
+    </select>
+
+    <insert id="addOrder" parameterType="com.gene.IM.entity.OrderInfo">
+        INSERT INTO `order` (type, type_name, order_time, ddl, order_Num, order_money, sum_time, remain_time, progress, status)
+        SELECT di.drink_id, #{typeName}, #{orderTime}, #{ddl}, #{orderNum}, #{orderMoney}, #{sumTime}, #{remainTime}, #{progress}, #{status}
+        FROM drink_info di
+        WHERE di.drink_name = #{typeName};
+    </insert>
+
+    <update id="changeStatusByLineID">
+        UPDATE `order`
+        SET status = '已完成'
+        WHERE id IN (SELECT order_id FROM order_line WHERE line_id = #{lineID})
+    </update>
+
+    <update id="changeStatusByOrderID">
+        UPDATE `order`
+        SET status = #{status}
+        WHERE id = #{orderID};
+    </update>
+    <update id="changeLineWorkingOrder">
+        UPDATE `order_line`
+        SET order_id = #{orderID}
+        WHERE line_id = #{lineID};
+    </update>
+    <insert id="addBelongLineOrder">
+        INSERT INTO `belong_line_order` (order_id,line_id)
+        VALUES (#{orderID},#{lineID});
+    </insert>
+
+
+
+
+
+
+
+
+
+
+</mapper>
