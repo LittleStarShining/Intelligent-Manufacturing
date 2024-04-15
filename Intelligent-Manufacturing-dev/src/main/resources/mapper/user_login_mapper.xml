@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gene.IM.mapper.UserLoginMapper">
+    <resultMap id="userLogin" type="com.gene.IM.DTO.UserLogin">
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="pwd" column="pwd" />
+        <result property="userID" column="user_id" />
+        <result property="token" column="token" />
+    </resultMap>
+    
+    <select id="getUserLoginInfo_by_UserID" resultMap="userLogin">
+        SELECT * FROM user_login
+        WHERE user_id = #{userID}
+    </select>
+    
+    
+    
+</mapper>
