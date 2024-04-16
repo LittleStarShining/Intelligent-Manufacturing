@@ -1,7 +1,7 @@
 package com.gene.IM.event;
 
 import org.springframework.context.ApplicationEvent;
-
+// hello
 public class checkMaterial extends ApplicationEvent {
     private double num;
     private int need;
