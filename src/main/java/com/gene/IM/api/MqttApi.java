@@ -36,7 +36,8 @@ public class MqttApi {
     public static int line3OrderNum;
     //是否火灾
     public static int isFire;
-    public static int isWaterErorr;
+    public static int WaterState;
+
     /**
      *  http:/localhost:9091/sendmsg
      */
@@ -75,7 +76,11 @@ public class MqttApi {
 //            allDevices.append("设备",macSet);
 //        }
         for (String macElement : macSet) {
-            allDevices.append("device",new JSONObject(macElement));
+            JSONObject json = new JSONObject(macElement);
+            if(json.getInt("Mac")!=0) {
+                json.set("line", (json.getInt("Mac")+4-1)/ 4 );
+            }
+            allDevices.append("Devices",json);
         }
 
 
@@ -155,8 +160,16 @@ public class MqttApi {
     }
     @NotNeedJWT
     @GetMapping("/getLineInfo")
-    public CommonResult<JSONObject> getLineInfo(Integer lineId) {
+    public CommonResult<JSONObject> getLineInfo(@RequestParam Integer lineId) {
         return new CommonResult<JSONObject>(deviceService.getLineInfo(lineId));
+
+    }
+
+    @NotNeedJWT
+    @GetMapping("/getWaterInfo")
+    public CommonResult<JSONObject> getWaterInfo(@RequestParam Integer lineId) {
+
+        return new CommonResult<JSONObject>(deviceService.getWaterInfo(lineId));
 
     }
 
