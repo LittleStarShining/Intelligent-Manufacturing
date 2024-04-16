@@ -44,11 +44,11 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 
     public static BlockingQueue<JSONObject> massageQueue = new ArrayBlockingQueue<>(20);
     public static HashSet<String> macSet = new HashSet<>(); // 存储已经接收过的字符串
-//进入流水线的订单商品个数（小于等于订单商品个数），第一个节点检测个数
+
     public static int line1_num = 0;
     public static int line2_num = 0;
     public static int line3_num = 0;
-    //离开流水线的订单商品个数（小于等于订单个数），最后一个节点检测个数
+
     public static int line1_pass_num = 0;
     public static int line2_pass_num = 0;
     public static int line3_pass_num = 0;
@@ -200,14 +200,14 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                     System.out.println("isFire:"+isFire);
 
                 }
-                //获取通过第一个节点的瓶数，并更新material表的数量
+                //获取通过瓶数，并更新material表的数量
                 else if (mac %4==1) {
                     System.out.println("mac%3=1:");
 
                     if((mac+4-1)/4==1){
                         //减原料。更新原料表
                         System.out.println("mac/4=0:");
-                        line1_num = json.getInt("Num")-line1_cumulation_num;
+                        line1_num = json.getInt("Num");
                         System.out.println("line1_num:"+line1_num);
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(1);
                         System.out.println(materials);
@@ -219,7 +219,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         num_temp1 = line1_num;
                     }
                     else if((mac+4-1)/4==2){
-                        line2_num = json.getInt("Num")-line2_cumulation_num;
+                        line2_num = json.getInt("Num");
 
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(2);
                         for(MaterialDTO m:materials) {
@@ -230,7 +230,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                     }
 
                     else if((mac+4-1)/4==3){
-                        line3_num = json.getInt("Num")-line3_cumulation_num;
+                        line3_num = json.getInt("Num");
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(3);
 
                         for(MaterialDTO m:materials) {

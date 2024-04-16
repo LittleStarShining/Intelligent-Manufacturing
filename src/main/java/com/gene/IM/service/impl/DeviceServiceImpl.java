@@ -94,14 +94,23 @@ public class DeviceServiceImpl implements DeviceService {
         return json;
     }
 
+    /**
+     * 分别获取流水线上订单完成率
+     * @return 三条流水线上订单完成率
+     */
     @Override
     public JSONObject getPass() {
         JSONArray jsonArray = new JSONArray();
-//        jsonArray.add(new JSONObject().set("line", 1).set("pass", line1_num * 1.0 / line1OrderNum));
-//        jsonArray.add(new JSONObject().set("line", 2).set("pass", line1_num * 1.0 / line2OrderNum));
-//        jsonArray.add(new JSONObject().set("line", 3).set("pass", line1_num * 1.0 / line3OrderNum));
+        jsonArray.add(new JSONObject().set("line", 1).set("pass", line1_pass_num * 1.0 / line1OrderNum));
+        jsonArray.add(new JSONObject().set("line", 2).set("pass", line2_pass_num * 1.0 / line2OrderNum));
+        jsonArray.add(new JSONObject().set("line", 3).set("pass", line3_pass_num * 1.0 / line3OrderNum));
         return new JSONObject().set("流水线通过率", jsonArray);
     }
+
+    /**
+     * 获取订单
+     * @return
+     */
     @Override
     public JSONArray getPassInNum() {
         JSONArray jsonArray = new JSONArray();

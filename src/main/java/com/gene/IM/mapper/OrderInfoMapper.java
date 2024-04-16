@@ -55,38 +55,45 @@ public interface OrderInfoMapper {
     public List<OrderInfo> getDoingTask();
 
     /**
-     *
+     * 获取已完成队列
      * @return
+     *       {
+     *         "orderID": 订单ID,
+     *         "typeName": 商品名称,
+     *         "orderMoney": 订单金额,
+     *         "lineID": 所属流水线ID,
+     *         "ddl": 交付日期
+     *       },
      */
     public List<OrderInfo> getDoneTask();
 
     /**
-     *
-     * @return
+     * 获取今日订单完成率
+     * @return 今日订单（3个）完成率
      */
     public List<TodayProgress> getCompleteRate();
 
     /**
-     *
-     * @return
+     * 获取已完成订单数
+     * @return 已完成订单数
      */
     public int getDoneNum();
 
     /**
-     *
-     * @return
+     * 获取订单总数
+     * @return 订单总数
      */
     public int getHistorySum();
 
     /**
      *
-     * @param id
-     * @return
+     * @param id 订单ID
+     * @return 获取订单详情
      */
     public OrderInfo getOrderDetail(@Param("orderID") int id);
 
     /**
-     *
+     * 获取
      * @return
      */
     public List<OrderInfo> WaitingOrderByMoney();
