@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.entity.OrderInfo;
+import com.gene.IM.mapper.DeviceMapper;
 import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.mapper.OrderInfoMapper;
 import com.gene.IM.service.OrderService;
@@ -47,6 +48,14 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
     public static int line1_num = 0;
     public static int line2_num = 0;
     public static int line3_num = 0;
+
+    public static int line1_pass_num = 0;
+    public static int line2_pass_num = 0;
+    public static int line3_pass_num = 0;
+    //流水线累积通过商品个数
+    public static int line1_cumulation_num=0;
+    public static int line2_cumulation_num=0;
+    public static int line3_cumulation_num=0;
     private JSONObject mac = new JSONObject();
     @Autowired
     private MqttAcceptClient mqttAcceptClient;
@@ -56,13 +65,15 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
     @Autowired
     private OrderInfoMapper orderInfoMapper;
     @Autowired
+    private DeviceMapper deviceMapper;
+    @Autowired
     @Qualifier("send_Client1")
     private Send_Client1  client8;
 
     @Autowired
     private OrderService orderService;
-    
-    
+
+
     @Autowired
     private JdbcTemplate jdbc;
 
@@ -76,7 +87,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         logger.info("连接断开，可以做重连");
         if (MqttAcceptClient.client == null || !MqttAcceptClient.client.isConnected()) {
             logger.info("emqx重新连接....................................................");
-   
+
         }
     }
 
@@ -88,7 +99,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
      */
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception, SQLException {
-    	String s =  new String(mqttMessage.getPayload());
+        String s =  new String(mqttMessage.getPayload());
         logger.info("接收消息主题 : " + topic);
         logger.info("接收消息Qos : " + mqttMessage.getQos());
         logger.info("接收的消息内容 : " + s);
@@ -96,7 +107,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 //        //时间
 //        String formatDateTime = DateUtil.formatDateTime(date3);
 
-     // 获取当前日期
+        // 获取当前日期
         LocalDate currentDate = LocalDate.now();
         // 格式化日期为 yyyy-MM-dd
         String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -111,7 +122,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 
         String payload = mqttMessage.toString();
         if(topic.equals("TopicA")) {
-        	System.out.println("TTTTTTT");
+            System.out.println("TTTTTTT");
             JSONObject jsonObject = new JSONObject(mqttMessage.toString());
             logger.info("接收的消息内容: " + jsonObject);
 
@@ -120,13 +131,13 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
             int a = jdbc.update("insert into task1table(temp,wet,status,date,time) values (?, ?,?, CURRENT_DATE, CURRENT_TIME)",  (int)jsonObject.get("temp"), (int)jsonObject.get("wet"),jsonObject.getStr("status"));
 
             if((int)jsonObject.get("temp")>=30) {
-            	System.out.println("temp");
+                System.out.println("temp");
 
-        	System.out.println(client8.publish(false ,"TopicC","on"));
-        	
-        }
-            
-            
+                System.out.println(client8.publish(false ,"TopicC","on"));
+
+            }
+
+
         } else if (topic.equals("topicB")) {
 //            try {
 //                massageQueue.put(payload);
@@ -173,6 +184,9 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                 int num_temp1 = line1_num;
                 int num_temp2 = line2_num;
                 int num_temp3 = line3_num;
+                int pass_num_temp1 = line1_pass_num;
+                int pass_num_temp2 = line2_pass_num;
+                int pass_num_temp3 = line3_pass_num;
                 System.out.println("---------已连接--------");
                 JSONObject json = JSONUtil.parseObj(mqttMessage.toString());
                 System.out.println("---------已连接--------接收到的json："+json);
@@ -180,44 +194,33 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                 int mac = json.getInt("Mac");
                 System.out.println("mac:" + mac);
                 System.out.println("mac/3:"+mac/3);
+                //获取火灾
+                if (mac==0) {
+                    isFire = json.getInt("Fire");
+                    System.out.println("isFire:"+isFire);
 
+                }
                 //获取通过瓶数，并更新material表的数量
-                if (mac %3==1) {
+                else if (mac %4==1) {
                     System.out.println("mac%3=1:");
 
-                    if(mac/3==0){
-                        System.out.println("mac/3=0:");
+                    if((mac+4-1)/4==1){
+                        //减原料。更新原料表
+                        System.out.println("mac/4=0:");
                         line1_num = json.getInt("Num");
-                        if(line1_num==line1OrderNum){
-                            orderInfoMapper.changeStatusByLineID(1);
-                            materialMapper.updateMaterialNeed();
-                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
-                            OrderInfo nextTask = nowList.get(0).get(0);
-                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"处理中");
-                            orderInfoMapper.changeLineWorkingOrder(1,nextTask.getOrderID());
-                            orderInfoMapper.addBelongLineOrder(1,nextTask.getOrderID());
-                        }
                         System.out.println("line1_num:"+line1_num);
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(1);
                         System.out.println(materials);
                         for(MaterialDTO m:materials){
-                        System.out.println("减的个数:"+m.getQuantity()*(line1_num-num_temp1));
+                            System.out.println("减的个数:"+m.getQuantity()*(line1_num-num_temp1));
                             materialMapper.decreaseMaterial(m.getMaterialId(),m.getQuantity()*(line1_num-num_temp1));
 
                         }
                         num_temp1 = line1_num;
                     }
-                    else if(mac/3==1){
+                    else if((mac+4-1)/4==2){
                         line2_num = json.getInt("Num");
-                        if(line2_num==line2OrderNum){
-                            orderInfoMapper.changeStatusByLineID(2);
-                            materialMapper.updateMaterialNeed();
-                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
-                            OrderInfo nextTask = nowList.get(1).get(0);
-                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"已完成");
-                            orderInfoMapper.changeLineWorkingOrder(2,nextTask.getOrderID());
-                            orderInfoMapper.addBelongLineOrder(2,nextTask.getOrderID());
-                        }
+
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(2);
                         for(MaterialDTO m:materials) {
                             materialMapper.decreaseMaterial(m.getMaterialId(), m.getQuantity() * (line2_num - num_temp2));
@@ -225,17 +228,9 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                         }
                         num_temp2 = line2_num;
                     }
-                    else if(mac/3==2){
+
+                    else if((mac+4-1)/4==3){
                         line3_num = json.getInt("Num");
-                        if(line3_num==line3OrderNum){
-                            orderInfoMapper.changeStatusByLineID(3);
-                            materialMapper.updateMaterialNeed();
-                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
-                            OrderInfo nextTask = nowList.get(2).get(0);
-                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"已完成");
-                            orderInfoMapper.changeLineWorkingOrder(3,nextTask.getOrderID());
-                            orderInfoMapper.addBelongLineOrder(3,nextTask.getOrderID());
-                        }
                         List<MaterialDTO> materials = materialMapper.getLineOrderMaterial(3);
 
                         for(MaterialDTO m:materials) {
@@ -247,17 +242,88 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                     }
 
                 }
-                //获取火灾
-                if (json.getStr("Mac").equals("0")) {
-                    isFire = json.getInt("Fire");
-                    System.out.println("isFire:"+isFire);
+                //获取水位,mac:2
+                else if (mac%4==2) {
+                    WaterState = json.getInt("Water_State");
 
                 }
-                //获取水位
-                if (json.getStr("Mac").equals("2")) {
-                    isWaterErorr = json.getInt("Water_State");
+
+                //获取灌装个数,mac:4
+                else if (mac%4==0) {
+
+                    if((mac+4-1)/4==1) {//更新流水线1
+                        line1_pass_num = json.getInt("Num")-line1_cumulation_num;
+                        if(line1_pass_num==line1OrderNum){
+                            //设置当前订单状态为已完成
+                            orderInfoMapper.changeStatusByLineID(1);
+                            //更新原料need
+                            materialMapper.updateMaterialNeed();
+                            //获取贪心分配
+                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
+                            //设置下一个任务为进行中
+                            OrderInfo nextTask = nowList.get(2).get(0);
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"处理中");
+                            //改变当前流水线处理订单的信息
+                            orderInfoMapper.changeLineWorkingOrder(1,nextTask.getOrderID());
+                            //记录流水线处理历史
+                            orderInfoMapper.addBelongLineOrder(1,nextTask.getOrderID());
+                            //更新当前流水线订单商品总数
+                            line1OrderNum = deviceMapper.getLineOrderDetail(1).getOrderNum();
+                            //更新流水线累积通过量
+                            line1_cumulation_num+=line1OrderNum;
+                        }
+                        pass_num_temp1 = line1_pass_num;
+                    }
+                    else if((mac+4-1)/4==2){//更新流水线2
+                        line2_pass_num = json.getInt("Num")-line2_cumulation_num;
+                        if(line2_pass_num==line2OrderNum){
+                            //设置当前订单状态为已完成
+                            orderInfoMapper.changeStatusByLineID(2);
+                            //更新原料need
+                            materialMapper.updateMaterialNeed();
+                            //获取贪心分配
+                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
+                            //设置下一个任务为进行中
+                            OrderInfo nextTask = nowList.get(2).get(0);
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"处理中");
+                            //改变当前流水线处理订单的信息
+                            orderInfoMapper.changeLineWorkingOrder(2,nextTask.getOrderID());
+                            //记录流水线处理历史
+                            orderInfoMapper.addBelongLineOrder(2,nextTask.getOrderID());
+                            //更新当前流水线订单商品总数
+                            line2OrderNum = deviceMapper.getLineOrderDetail(2).getOrderNum();
+                            //更新流水线累积通过量
+                            line2_cumulation_num+=line2OrderNum;
+                        }
+                        pass_num_temp2 = line2_pass_num;
+                    }
+                    else if((mac+4-1)/4==3){//更新流水线3
+                        line3_pass_num = json.getInt("Num")-line3_cumulation_num;
+                        if(line3_pass_num==line3OrderNum){
+                            //设置当前订单状态为已完成
+                            orderInfoMapper.changeStatusByLineID(3);
+                            //更新原料need
+                            materialMapper.updateMaterialNeed();
+                            //获取贪心分配
+                            List<List<OrderInfo>> nowList = orderService.greedyAssign();
+                            //设置下一个任务为进行中
+                            OrderInfo nextTask = nowList.get(2).get(0);
+                            orderInfoMapper.changeStatusByOrderID(nextTask.getOrderID(),"处理中");
+                            //改变当前流水线处理订单的信息
+                            orderInfoMapper.changeLineWorkingOrder(3,nextTask.getOrderID());
+                            //记录流水线处理历史
+                            orderInfoMapper.addBelongLineOrder(3,nextTask.getOrderID());
+                            //更新当前流水线订单商品总数
+                            line3OrderNum = deviceMapper.getLineOrderDetail(3).getOrderNum();
+                            line2_cumulation_num+=line2OrderNum;
+                        }
+                        pass_num_temp3 = line3_pass_num;
+                    }
+
 
                 }
+
+
                 if (!massageQueue.offer(json)) {
                     // 队列已满，弹出头元素
                     JSONObject oldMessage = massageQueue.poll();
@@ -269,7 +335,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
                 System.out.println("massageQueue" + massageQueue);
 
             }
-        	 
+
         }
     }
 
