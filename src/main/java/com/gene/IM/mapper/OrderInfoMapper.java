@@ -1,5 +1,6 @@
 package com.gene.IM.mapper;
 
+import com.gene.IM.DTO.DoingOrder_ds;
 import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.DTO.OrderIndex;
 import com.gene.IM.DTO.TodayProgress;
@@ -177,6 +178,6 @@ public interface OrderInfoMapper {
 
     public void updatePredictStart(@Param("orderID") int orderID, @Param("predictStart") LocalDate start);
     public void updatePredictFinish(@Param("orderID") int orderID, @Param("predictFinish") LocalDate finish);
-
+    public List<DoingOrder_ds> lineProductDetail();
 
 }

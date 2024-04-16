@@ -62,6 +62,12 @@
         <result property="totalMonthMoney" column="total_order_money" />
         <result property="totalMonthNum" column="total_order_num" />
     </resultMap>
+    <resultMap id="doingOrder_ds" type="com.gene.IM.DTO.DoingOrder_ds">
+        <result property="orderID" column="id" />
+        <result property="lineID" column="line_id" />
+        <result property="orderSum" column="order_num" />
+        <result property="doneRate" column="progress" />
+    </resultMap>
 
 
     <!-- Select Query -->
@@ -227,6 +233,13 @@
         SET predict_finish = #{predictFinish}
         WHERE id = #{orderID};
     </update>
+
+    <select id="lineProductDetail" resultMap="doingOrder_ds">
+        SELECT o.id, ol.line_id, o.order_num, o.progress
+        FROM `order` o
+                 LEFT JOIN order_line ol ON o.id = ol.order_id
+        WHERE o.status = '处理中';
+    </select>
 
 
 

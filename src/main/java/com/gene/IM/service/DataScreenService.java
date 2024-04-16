@@ -5,7 +5,8 @@ import java.util.Map;
 public interface DataScreenService {
 
     public Map<String,Object> production();
+    public Map<String,Object> lineProduction();
+    public Map<String,Object> allOrderList();
 
-    public Map<String,Object>
 
 }
