@@ -42,4 +42,6 @@ public interface DeviceService {
     public JSONArray getPassInNum();
 
     public JSONObject getLineInfo(Integer lineId);
+
+    public JSONObject getWaterInfo(Integer lineId);
 }

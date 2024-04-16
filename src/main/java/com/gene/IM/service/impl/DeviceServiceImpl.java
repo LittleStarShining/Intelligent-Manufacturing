@@ -36,7 +36,7 @@ public class DeviceServiceImpl implements DeviceService {
             //如果数据库没有该设备，则插入新设备
             if(deviceMapper.selectDeviceByMac(mac) == null){
                 device.setLine((Integer) devices.getJSONObject(i).get("line"));
-                device.setDescription(devices.getJSONObject(i).getStr("description"));
+                device.setDescription(devices.getJSONObject(i).getStr("describe"));
                 deviceMapper.insertDevice(device);
             }
             //数据库已有设备，直接更新
@@ -106,8 +106,8 @@ public class DeviceServiceImpl implements DeviceService {
     public JSONArray getPassInNum() {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(new JSONObject().set("line", 1).set("num",line1_num+"/"+line1OrderNum));
-        jsonArray.add(new JSONObject().set("line", 2).set("line2",line2_num+"/"+line2OrderNum));
-        jsonArray.add(new JSONObject().set("line", 3).set("line3",line3_num+"/"+line3OrderNum));
+        jsonArray.add(new JSONObject().set("line", 2).set("num",line2_num+"/"+line2OrderNum));
+        jsonArray.add(new JSONObject().set("line", 3).set("num",line3_num+"/"+line3OrderNum));
         return jsonArray;
     }
 
@@ -126,6 +126,12 @@ public class DeviceServiceImpl implements DeviceService {
             json.set("passNum", line3_num+"/"+line3OrderNum);
         }
 
+        return json;
+    }
+
+    @Override
+    public JSONObject getWaterInfo(Integer lineId) {
+        JSONObject json = new JSONObject().set("WaterState",WaterState);
         return json;
     }
 
