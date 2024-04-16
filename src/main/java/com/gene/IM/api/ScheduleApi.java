@@ -15,9 +15,9 @@ public class ScheduleApi {
     @Autowired
     private OrderService o;
     @NotNeedJWT
-    @PostMapping("/getScheduleList")
-    public Map<String,Object> addNewOrder(){
-        return null;
+    @GetMapping("/getScheduleList")
+    public Map<String,Object> getScheduleList(){
+        return o.getScheduleList();
     }
 
 

@@ -12,6 +12,7 @@
         <result property="cumulation" column="cumulation" />
         <result property="need" column="need" />
         <result property="updateDate" column="update_date" />
+        <result property="isRemind" column="is_remind"/>
     </resultMap>
 
     <resultMap id="materialDTOResultMap" type="com.gene.IM.DTO.MaterialDTO">
@@ -151,4 +152,10 @@ where material = #{materialId}
         FROM drink_material
         WHERE drink_id = (SELECT type FROM `order` WHERE id = (SELECT order_id FROM order_line WHERE line_id = #{lineID}));
     </select>
+
+    <update id="setIsRemind">
+        update material
+        set is_remind = 1
+        where material_id = #{materialId}
+    </update>
 </mapper>

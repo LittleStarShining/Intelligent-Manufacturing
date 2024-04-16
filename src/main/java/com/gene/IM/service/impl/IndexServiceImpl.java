@@ -15,6 +15,11 @@ public class IndexServiceImpl implements IndexService {
 
     @Autowired
     private OrderInfoMapper orderInfoMapper;
+
+    /**
+     *
+     * @return
+     */
     @Override
     public Map<String, Object> getIndexInfo() {
         Map<String,Object> res = new HashMap<>();

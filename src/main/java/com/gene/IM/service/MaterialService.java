@@ -22,4 +22,6 @@ public interface MaterialService {
     List<MaterialDTO> getInferById(Integer id);
 
     public double[] getAllConsumes(Integer materialId);
+    public void checkMaterial();
+
 }

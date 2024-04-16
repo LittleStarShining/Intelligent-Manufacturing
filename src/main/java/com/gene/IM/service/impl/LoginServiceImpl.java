@@ -22,6 +22,12 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private TokenService tokenService;
 
+    /**
+     *
+     * @param userID 用户名
+     * @param pwd 密码
+     * @return
+     */
     @Override
     public Map<String,Object> login(String userID, String pwd) {
         Map<String,Object> res = new HashMap<>();

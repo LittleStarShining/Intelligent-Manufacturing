@@ -3,18 +3,51 @@ package com.gene.IM.service;
 import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.entity.OrderInfo;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
 public interface OrderService {
+    /**
+     *
+     * @return
+     */
     public Map<String,Object> showWaitingList();
+
+    /**
+     *
+     * @return
+     */
     public Map<String,Object> showDoingList();
+
+    /**
+     *
+     * @return
+     */
     public Map<String,Object> showDoneList();
+
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Map<String,Object> showOrderDetail(int id);
 
+    /**
+     *
+     * @param situation
+     * @param sort
+     * @return
+     */
     public Map<String,Object> orderBySituation(int situation, String sort);
 
+    /**
+     *
+     * @param source
+     * @param key
+     * @return
+     */
     public Map<String,Object> vagueSelect(String source,String key);
 
 
@@ -29,11 +62,33 @@ public interface OrderService {
     // 获得最优先订单
     public OrderInfo getHighestPriorityOrder();
 
+    /**
+     *
+     * @return
+     */
     public List<HistoryReportGraph> getGraphData();
+
+    /**
+     *
+     * @return
+     */
     public Map<String,Object> showHistoryReport();
+
+    /**
+     *
+     * @param request
+     * @return
+     */
     public Map<String, Object> addOrder(OrderInfo request);
 
+    /**
+     *
+     * @return
+     */
     public Map<String,Object> getScheduleList();
 
+
+    // 获得预计完成时间
+    public LocalDate getPredictFinish(int orderID);
 
 }
