@@ -22,6 +22,12 @@ public class WebSocket {
         System.out.println("New session opened: " + session.getId());
     }
 
+    @OnClose
+    public void onClose(Session session) {
+        sessions.remove(session);
+        System.out.println("Session closed: " + session.getId());
+    }
+
     /**
      * 向所有客户端发送消息
      *
@@ -33,6 +39,7 @@ public class WebSocket {
         for (Session session : sessions) {
             synchronized (session)
             {
+                System.out.println("hhahah");
                 session.getBasicRemote().sendText(message);
             }
         }

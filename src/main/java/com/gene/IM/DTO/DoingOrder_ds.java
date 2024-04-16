@@ -1,10 +1,11 @@
 package com.gene.IM.DTO;
 
-public class TodayProgress {
+public class DoingOrder_ds {
+    private int lineID;
     private int orderID;
     private int orderSum;
-    private float progress;
-    private  int lineID;
+    private int doneSum;
+    private float doneRate;
 
     public int getLineID() {
         return lineID;
@@ -30,11 +31,19 @@ public class TodayProgress {
         this.orderSum = orderSum;
     }
 
-    public float getProgress() {
-        return progress;
+    public int getDoneSum() {
+        return doneSum;
     }
 
-    public void setProgress(float progress) {
-        this.progress = progress;
+    public void setDoneSum(int doneSum) {
+        this.doneSum = doneSum;
+    }
+
+    public float getDoneRate() {
+        return doneRate;
+    }
+
+    public void setDoneRate(float doneRate) {
+        this.doneRate = doneRate;
     }
 }

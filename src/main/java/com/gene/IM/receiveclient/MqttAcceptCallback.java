@@ -44,7 +44,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 
     public static BlockingQueue<JSONObject> massageQueue = new ArrayBlockingQueue<>(20);
     public static HashSet<String> macSet = new HashSet<>(); // 存储已经接收过的字符串
-//进入流水线的订单商品个数（小于等于订单商品个数），第一个节点检测个数
+    //进入流水线的订单商品个数（小于等于订单商品个数），第一个节点检测个数
     public static int line1_num = 0;
     public static int line2_num = 0;
     public static int line3_num = 0;
