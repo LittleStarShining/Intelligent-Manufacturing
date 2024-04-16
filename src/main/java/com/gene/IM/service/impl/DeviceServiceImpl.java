@@ -120,6 +120,16 @@ public class DeviceServiceImpl implements DeviceService {
         return jsonArray;
     }
 
+
+    @Override
+    public JSONArray getPassOutNum() {
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(new JSONObject().set("line", 1).set("num",line1_pass_num+"/"+line1OrderNum));
+        jsonArray.add(new JSONObject().set("line", 2).set("num",line1_pass_num+"/"+line2OrderNum));
+        jsonArray.add(new JSONObject().set("line", 3).set("num",line1_pass_num+"/"+line3OrderNum));
+        return jsonArray;
+    }
+
     @Override
     public JSONObject getLineInfo(Integer lineId) {
         Map<String,Object> m = deviceMapper.getLineInfo(lineId);

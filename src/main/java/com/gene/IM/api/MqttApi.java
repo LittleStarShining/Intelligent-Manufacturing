@@ -142,6 +142,19 @@ public class MqttApi {
 
     }
 
+    /**
+     * 获取入库商品个数
+     * @return
+     */
+    @NotNeedJWT
+    @GetMapping("/getPassOutNum")
+    public CommonResult<JSONArray> getPassOutNum() {
+
+        return new CommonResult<JSONArray>(deviceService.getPassOutNum());
+
+
+    }
+
     @NotNeedJWT
     @GetMapping("/getPassInNum")
     public CommonResult<JSONArray> getPassInNum() {
