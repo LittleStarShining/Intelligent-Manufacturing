@@ -17,6 +17,26 @@ public class OrderInfo {
     private String status;
     private int lineID;
 
+    public LocalDate getPredictStart() {
+        return predictStart;
+    }
+
+    public void setPredictStart(LocalDate predictStart) {
+        this.predictStart = predictStart;
+    }
+
+    public LocalDate getPredictFinish() {
+        return predictFinish;
+    }
+
+    public void setPredictFinish(LocalDate predictFinish) {
+        this.predictFinish = predictFinish;
+    }
+
+    private LocalDate predictStart;
+    private LocalDate predictFinish;
+
+
     public double getPriority() {
         return priority;
     }

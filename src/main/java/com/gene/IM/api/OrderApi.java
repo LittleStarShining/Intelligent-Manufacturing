@@ -17,30 +17,54 @@ public class OrderApi {
     @Autowired
     private OrderService orderService;
 
+    /**
+     *
+     * @return
+     */
     @NotNeedJWT
     @GetMapping("/showWaitingTask")
     public Map<String,Object> showWaitingList(){
         return orderService.showWaitingList();
     }
 
+    /**
+     *
+     * @return
+     */
     @NotNeedJWT
     @GetMapping("/showDoingTask")
     public Map<String,Object> showDoingList(){
         return orderService.showDoingList();
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @NotNeedJWT
     @GetMapping("/showDetail")
     public Map<String,Object> showOrderDetail(@RequestParam("orderID") int id){
         return orderService.showOrderDetail(id);
     }
 
+    /**
+     *
+     * @param situation
+     * @param sort
+     * @return
+     */
     @NotNeedJWT
     @GetMapping("/sortSelect")
     public Map<String,Object> sort(@RequestParam("situation") int situation,@RequestParam("sort") String sort){
         return orderService.orderBySituation(situation,sort);
     }
 
+    /**
+     *
+     * @param body
+     * @return
+     */
     @NotNeedJWT
     @PostMapping("/vagueSelect")
     public Map<String,Object> vagueSelect(@RequestBody Map<String,Object> body){
@@ -49,11 +73,21 @@ public class OrderApi {
         return orderService.vagueSelect(source,key);
     }
 
+    /**
+     *
+     * @return
+     */
     @NotNeedJWT
     @GetMapping("/showDoneTask")
     public Map<String,Object> showDoneList(){
         return orderService.showDoneList();
     }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
     @NotNeedJWT
     @PostMapping("/addNewOrder")
     public Map<String,Object> addNewOrder(@RequestBody OrderInfo o){

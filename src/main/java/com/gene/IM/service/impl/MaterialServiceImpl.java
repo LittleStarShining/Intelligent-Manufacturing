@@ -3,10 +3,13 @@ package com.gene.IM.service.impl;
 import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.entity.Material;
+import com.gene.IM.event.checkMaterial;
 import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.service.MaterialService;
 import com.gene.IM.util.TripleExponentialImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +17,8 @@ import java.util.List;
 public class MaterialServiceImpl implements MaterialService {
     @Autowired
     private MaterialMapper materialMapper;
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     @Override
     public Material getMaterialById(Integer materialId) {
@@ -61,5 +66,18 @@ public Material update(Material material) {
     @Override
     public double[] getAllConsumes(Integer materialId) {
         return materialMapper.getAllConsumes(materialId);
+    }
+
+    @Override
+    @Scheduled(fixedRate = 10000)
+    public void checkMaterial() {
+        List<Material> materials = materialMapper.find(new SelectMaterial());
+        for (Material material : materials) {
+            if (material.isRemind() == 0 && material.getNum() < material.getNeed()) {
+                materialMapper.setIsRemind(material.getMaterialId());
+                checkMaterial checkMaterial = new checkMaterial(this, material.getNum(), material.getNeed(), material.getMaterialId());
+                publisher.publishEvent(checkMaterial);
+            }
+        }
     }
 }

@@ -27,5 +27,10 @@ public interface MaterialMapper {
 
     List<MaterialDTO> getInferById(Integer id);
 
+    // 看看原料是否足够
+    public double getMaterialNeed(Integer materialId);
+
     public double[] getAllConsumes(Integer materialId);
+
+    public void setIsRemind(Integer materialId);
 }

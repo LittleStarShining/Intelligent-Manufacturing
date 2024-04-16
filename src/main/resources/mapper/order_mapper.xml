@@ -52,6 +52,8 @@
         <result property="progress" column="progress" />
         <result property="lineID" column="line_id" />
         <result property="priority" column="priority" />
+        <result property="predictStart" column="predict_start" />
+        <result property="predictFinish" column="predict_finish" />
     </resultMap>
 
     <resultMap id="historyReportGraph" type="com.gene.IM.DTO.HistoryReportGraph">
@@ -62,7 +64,7 @@
     </resultMap>
 
 
-
+    <!-- Select Query -->
     <select id="getTodayTask" resultMap="orderIndex">
         SELECT o.id AS order_id, o.order_num, ol.line_id
         FROM `order` o
@@ -70,62 +72,63 @@
         WHERE o.status = '处理中';
     </select>
 
+    <!-- Select Query -->
     <select id="getCompleteRate" resultMap="todayProgress">
         SELECT o.id, o.order_num, o.progress
         FROM `order` o
         WHERE o.status = '处理中';
     </select>
-
+    <!-- Select Query -->
     <select id="getDoneNum" resultType="int">
         SELECT COUNT(*) FROM `order`
         WHERE status = '已完成'
     </select>
-
+    <!-- Select Query -->
     <select id="getHistorySum" resultType="int">
         SELECT COUNT(*) FROM `order`;
     </select>
-
+    <!-- Select Query -->
     <select id="getWaitingTask" resultMap="waitingOrderListInfo">
         SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
         FROM `order` o
         WHERE o.status = '等候';
     </select>
-
+    <!-- Select Query -->
     <select id="getDoingTask" resultMap="doingOrderListInfo">
         SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
         FROM `order` o
                  INNER JOIN order_line ol ON o.id = ol.order_id
         WHERE o.status = '处理中';
     </select>
-
+    <!-- Select Query -->
     <select id="getOrderDetail" resultMap="orderDetailInfo">
-        SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money, o.order_time,o.ddl,o.progress,o.remain_time
+        SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money, o.order_time,o.ddl,o.progress,o.remain_time,o.predict_start,o.predict_finish
         FROM `order` o
                  LEFT JOIN belong_line_order ol ON o.id = ol.order_id
         WHERE o.id = #{orderID};
     </select>
-
+    <!-- Select Query -->
     <select id="orderBySpecial" resultMap="orderDetailInfo">
         SELECT o.id, o.type_name, o.order_num, ol.line_id, o.order_money,o.ddl
         FROM `order` o
                  LEFT JOIN order_line ol ON o.id = ol.order_id
         WHERE o.status = #{sort};
     </select>
-
+    <!-- Select Query -->
     <select id="WaitingOrderByMoney" resultMap="waitingOrderListInfo">
         SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
         FROM `order` o
         WHERE o.status = '等候'
         ORDER BY o.order_money DESC;
     </select>
-
+    <!-- Select Query -->
     <select id="WaitingOrderByDdl" resultMap="waitingOrderListInfo">
         SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
         FROM `order` o
         WHERE o.status = '等候'
         ORDER BY o.ddl;
     </select>
-
+    <!-- Select Query -->
     <select id="DoingOrderByMoney" resultMap="doingOrderListInfo">
         SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
         FROM `order` o
@@ -133,7 +136,7 @@
         WHERE o.status = '处理中'
         ORDER BY o.order_money DESC;
     </select>
-
+    <!-- Select Query -->
     <select id="DoingOrderByDdl" resultMap="doingOrderListInfo">
         SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
         FROM `order` o
@@ -141,7 +144,7 @@
         WHERE o.status = '处理中'
         ORDER BY o.ddl;
     </select>
-
+    <!-- Select Query -->
     <select id="vagueSelect" resultMap="orderDetailInfo">
         SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl, ol.line_id
         FROM `order` o
@@ -151,20 +154,20 @@
             OR o.type_name LIKE CONCAT('%', #{key}, '%'));
     </select>
 
-
+    <!-- Select Query -->
     <select id="getDoneTask" resultMap="doneOrderListInfo">
         SELECT o.id, o.type_name, blo.line_id, o.order_money, o.ddl, o.order_num
         FROM `order` o
                  LEFT JOIN belong_line_order blo ON o.id = blo.order_id
         WHERE o.status = '已完成';
     </select>
-
+    <!-- Select Query -->
     <update id="setPriority">
         UPDATE `order`
         SET priority = #{priority}
         WHERE id = #{orderID};
     </update>
-
+    <!-- Select Query -->
     <select id="genGraph" resultMap="historyReportGraph">
         SELECT
             MONTH(o.order_time) AS month,
@@ -182,34 +185,48 @@
             month,
             lineID;
     </select>
-
+    <!-- Select Query -->
     <insert id="addOrder" parameterType="com.gene.IM.entity.OrderInfo">
         INSERT INTO `order` (type, type_name, order_time, ddl, order_Num, order_money, sum_time, remain_time, progress, status)
         SELECT di.drink_id, #{typeName}, #{orderTime}, #{ddl}, #{orderNum}, #{orderMoney}, #{sumTime}, #{remainTime}, #{progress}, #{status}
         FROM drink_info di
         WHERE di.drink_name = #{typeName};
     </insert>
-
+    <!-- Select Query -->
     <update id="changeStatusByLineID">
         UPDATE `order`
         SET status = '已完成'
         WHERE id IN (SELECT order_id FROM order_line WHERE line_id = #{lineID})
     </update>
-
+    <!-- Select Query -->
     <update id="changeStatusByOrderID">
         UPDATE `order`
         SET status = #{status}
         WHERE id = #{orderID};
     </update>
+    <!-- Select Query -->
     <update id="changeLineWorkingOrder">
         UPDATE `order_line`
         SET order_id = #{orderID}
         WHERE line_id = #{lineID};
     </update>
+    <!-- Select Query -->
     <insert id="addBelongLineOrder">
         INSERT INTO `belong_line_order` (order_id,line_id)
         VALUES (#{orderID},#{lineID});
     </insert>
+
+    <update id="updatePredictStart">
+        UPDATE `order`
+        SET predict_start = #{predictStart}
+        WHERE id = #{orderID};
+    </update>
+
+    <update id="updatePredictFinish">
+        UPDATE `order`
+        SET predict_finish = #{predictFinish}
+        WHERE id = #{orderID};
+    </update>
 
 
 

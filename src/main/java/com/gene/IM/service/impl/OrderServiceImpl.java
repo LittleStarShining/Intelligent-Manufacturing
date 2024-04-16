@@ -2,10 +2,13 @@ package com.gene.IM.service.impl;
 
 import com.gene.IM.DTO.HistoryReportGraph;
 import com.gene.IM.entity.OrderInfo;
+import com.gene.IM.event.newOrder;
 import com.gene.IM.mapper.MaterialMapper;
 import com.gene.IM.mapper.OrderInfoMapper;
+import com.gene.IM.service.MaterialService;
 import com.gene.IM.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +25,10 @@ public class OrderServiceImpl implements OrderService {
     private OrderInfoMapper orderInfoMapper;
     @Autowired
     private MaterialMapper materialMapper;
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
+    private static final int efficiency = 5000;
 
     @Override
     public Map<String, Object> showWaitingList() {
@@ -165,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
         Period period = Period.between(orderTime, today);
         int waitTime = period.getDays();
         // 获得订单预计完成时间 默认产能5000瓶一天
-        double predictedTime = Math.ceil((double) orderInfoMapper.getOrderDetail(orderId).getOrderNum() / 5000);
+        double predictedTime = Math.ceil((double) orderInfoMapper.getOrderDetail(orderId).getOrderNum() / efficiency);
         // 计算订单的优先级
         return (waitTime + predictedTime) / (predictedTime + 1);
     }
@@ -190,6 +197,20 @@ public class OrderServiceImpl implements OrderService {
         for (int i = 0; i < lineNum; i++) {
             lines.add(new ArrayList<>());
         }
+        // 获得三条流水线当前工作订单的预计完成时间
+        // 获得三条流水线当前工作订单的预计完成时间
+        List<OrderInfo> workingorders = orderInfoMapper.getDoingTask();
+        LocalDate[] lastFinishTimes = new LocalDate[lineNum];
+        lastFinishTimes[0] = getPredictFinish(workingorders.get(0).getOrderID());
+        lastFinishTimes[1] = getPredictFinish(workingorders.get(1).getOrderID());
+        lastFinishTimes[2] = getPredictFinish(workingorders.get(2).getOrderID());
+        orderInfoMapper.updatePredictFinish(workingorders.get(0).getOrderID(),lastFinishTimes[0]);
+        orderInfoMapper.updatePredictFinish(workingorders.get(1).getOrderID(),lastFinishTimes[1]);
+        orderInfoMapper.updatePredictFinish(workingorders.get(2).getOrderID(),lastFinishTimes[2]);
+
+
+
+
         for (OrderInfo orderInfo : orderInfos) {
             int minIndex = 0;
             for (int i = 1; i < lineNum; i++) {
@@ -197,6 +218,14 @@ public class OrderServiceImpl implements OrderService {
                     minIndex = i;
                 }
             }
+            lines.get(minIndex).add(orderInfo);
+            // 设置预计开始时间为对应流水线的最后一个任务的预计完成时间
+            orderInfo.setPredictStart(lastFinishTimes[minIndex]);
+            orderInfoMapper.updatePredictStart(orderInfo.getOrderID(),lastFinishTimes[minIndex]);
+            // 更新对应流水线的最后一个任务的预计完成时间
+
+            lastFinishTimes[minIndex] = getPredictFinish(orderInfo.getOrderID());
+            orderInfoMapper.updatePredictFinish(orderInfo.getOrderID(),lastFinishTimes[minIndex]);
             lines.get(minIndex).add(orderInfo);
         }
         return lines;
@@ -301,12 +330,15 @@ public class OrderServiceImpl implements OrderService {
             order.setProgress(progress);
             order.setStatus(status);
 
+
             // 调用mapper添加订单
-            orderInfoMapper.addOrder(order);
+            int orderId = orderInfoMapper.addOrder(order);
             // 修改Need
             materialMapper.updateMaterialNeed();
             // 重分配优先级
-            this.getPriorityQueue();
+            this.greedyAssign();
+            OrderInfo thisOrder = orderInfoMapper.getOrderDetail(orderId);
+            publisher.publishEvent(new newOrder(this, orderId,thisOrder.getTypeName(),thisOrder.getOrderNum(),thisOrder.getPredictStart(),thisOrder.getPredictFinish()));
 
             res.put("code", 1);
             res.put("desc", "添加订单成功");
@@ -320,7 +352,49 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Map<String, Object> getScheduleList() {
-        return null;
+        Map<String, Object> res = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        List<Object> scheduleList = new ArrayList<>();
+        try {
+            List<List<OrderInfo>> predictListList = this.greedyAssign();
+
+            Map<String, Object> line1Tasks = new HashMap<>();
+            Map<String, Object> line2Tasks = new HashMap<>();
+            Map<String, Object> line3Tasks = new HashMap<>();
+
+            line1Tasks.put("lineID", 1);
+            line1Tasks.put("tasks", predictListList.get(0));
+            line2Tasks.put("lineID", 2);
+            line2Tasks.put("tasks", predictListList.get(1));
+            line3Tasks.put("lineID", 3);
+            line3Tasks.put("tasks", predictListList.get(2));
+
+            scheduleList.add(line1Tasks);
+            scheduleList.add(line2Tasks);
+            scheduleList.add(line3Tasks);
+            data.put("scheduleList", scheduleList);
+            res.put("data",data);
+        }catch (Exception e){
+            res.put("code",0);
+            res.put("desc","获取失败");
+            return res;
+        }
+
+        res.put("code",1);
+        res.put("desc","获取成功");
+        return res;
+    }
+
+    @Override
+    public LocalDate getPredictFinish(int OrderId) {
+        // 获得剩余工作量
+        double remainNum = orderInfoMapper.getOrderDetail(OrderId).getOrderNum() * (1 - orderInfoMapper.getOrderDetail(OrderId).getProgress());
+        int remainTime = (int) Math.ceil(remainNum / efficiency);
+        LocalDate start = orderInfoMapper.getOrderDetail(OrderId).getPredictStart();
+        if (start == null){
+            start = LocalDate.now();
+        }
+        return start.plusDays(remainTime);
     }
 
 

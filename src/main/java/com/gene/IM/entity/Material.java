@@ -2,6 +2,15 @@ package com.gene.IM.entity;
 
 
 public class Material {
+  private int isRemind;
+
+  public int isRemind() {
+    return isRemind;
+  }
+
+  public void setRemind(int remind) {
+    isRemind = remind;
+  }
 
   private Integer materialId;
 

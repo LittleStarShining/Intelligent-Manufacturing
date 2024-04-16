@@ -12,6 +12,7 @@
         <result property="headImage" column="image" />
     </resultMap>
 
+    <!-- Select Query -->
     <select id="getUserInfo" resultMap="userInfo">
         SELECT * FROM user_info
         WHERE id = #{id}

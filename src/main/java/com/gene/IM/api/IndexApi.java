@@ -16,6 +16,10 @@ public class IndexApi {
     @Autowired
     private IndexService indexService;
 
+    /**
+     *
+     * @return
+     */
     @NotNeedJWT
     @GetMapping("/showIndexInfo")
     public Map<String,Object> show(){
