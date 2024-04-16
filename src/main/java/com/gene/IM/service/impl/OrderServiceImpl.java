@@ -17,7 +17,8 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.gene.IM.receiveclient.MqttAcceptCallback.line1_num;
+import static com.gene.IM.api.YoloApi.*;
+import static com.gene.IM.receiveclient.MqttAcceptCallback.*;
 
 @Service("OrderService")
 public class OrderServiceImpl implements OrderService {
@@ -350,6 +351,17 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         return res;
+    }
+
+    @Override
+    public double getPassRate(int lineID) {
+        if(lineID==1){
+            return errorOrderNumLine1/1.0*(line1_cumulation_num+line1_pass_num);
+        }else if(lineID==2){
+            return errorOrderNumLine2/1.0*(line2_cumulation_num+line2_pass_num);
+        }else{
+            return errorOrderNumLine3/1.0*(line3_cumulation_num+line3_pass_num);
+        }
     }
 
     @Override

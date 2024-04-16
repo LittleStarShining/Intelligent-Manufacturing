@@ -18,8 +18,6 @@ public class DataScreenApi {
     @Autowired
     private DataScreenService dataScreenService;
 
-
-
     @NotNeedJWT
     @GetMapping("/orderList")
     public Map<String,Object> getOrderList(){

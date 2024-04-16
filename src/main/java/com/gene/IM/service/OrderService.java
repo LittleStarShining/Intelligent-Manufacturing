@@ -87,6 +87,8 @@ public interface OrderService {
      */
     public Map<String,Object> getScheduleList();
 
+    public double getPassRate(int lineID);
+
 
     // 获得预计完成时间
     public LocalDate getPredictFinish(int orderID);

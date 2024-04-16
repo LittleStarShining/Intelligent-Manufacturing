@@ -1,6 +1,8 @@
 package com.gene.IM.api;
 
+import cn.hutool.json.JSONObject;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
+import com.gene.IM.entity.CommonResult;
 import com.gene.IM.entity.OrderInfo;
 import com.gene.IM.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +94,19 @@ public class OrderApi {
     @PostMapping("/addNewOrder")
     public Map<String,Object> addNewOrder(@RequestBody OrderInfo o){
         return orderService.addOrder(o);
+    }
+
+    /**
+     * 获取合格率
+     *
+     * @return
+     */
+    @NotNeedJWT
+    @GetMapping("/getPassRate")
+    public CommonResult<JSONObject> getPassRate(){
+        int lineId =1;
+        JSONObject json = new JSONObject().set("line",lineId).set("rate",orderService.getPassRate(lineId));
+        return new CommonResult<JSONObject>(json);
     }
 
 }
