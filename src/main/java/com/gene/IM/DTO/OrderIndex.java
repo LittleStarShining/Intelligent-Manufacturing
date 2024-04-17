@@ -5,15 +5,6 @@ public class OrderIndex {
     private int orderNum;
     private int lineID;
     private int done;
-    public int getDone() {
-        return done;
-    }
-
-    public void setDone(int done) {
-        this.done = done;
-    }
-
-
 
 
     public int getId() {
@@ -38,5 +29,13 @@ public class OrderIndex {
 
     public void setLineID(int lineID) {
         this.lineID = lineID;
+    }
+
+    public int getDone() {
+        return done;
+    }
+
+    public void setDone(int done) {
+        this.done = done;
     }
 }

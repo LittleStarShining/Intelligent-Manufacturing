@@ -18,7 +18,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.gene.IM.api.YoloApi.*;
-import static com.gene.IM.api.predictApi.*;
 import static com.gene.IM.receiveclient.MqttAcceptCallback.*;
 
 @Service("OrderService")
@@ -222,7 +221,7 @@ public class OrderServiceImpl implements OrderService {
                     minIndex = i;
                 }
             }
-
+            lines.get(minIndex).add(orderInfo);
             // 设置预计开始时间为对应流水线的最后一个任务的预计完成时间
             orderInfo.setPredictStart(lastFinishTimes[minIndex]);
             orderInfoMapper.updatePredictStart(orderInfo.getOrderID(),lastFinishTimes[minIndex]);

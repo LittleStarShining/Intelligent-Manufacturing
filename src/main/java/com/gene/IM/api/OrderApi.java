@@ -112,12 +112,12 @@ public class OrderApi {
      *
      * @return
      */
-    @NotNeedJWT
-    @GetMapping("/getPassRate")
-    public CommonResult<JSONObject> getPassRate(){
-        int lineId =1;
-        JSONObject json = new JSONObject().set("line",lineId).set("rate",orderService.getPassRate(lineId));
-        return new CommonResult<JSONObject>(json);
-    }
+//    @NotNeedJWT
+//    @GetMapping("/getPassRate")
+//    public CommonResult<JSONObject> getPassRate(){
+//        int lineId =1;
+//        JSONObject json = new JSONObject().set("line",lineId).set("rate",orderService.getPassRate(lineId));
+//        return new CommonResult<JSONObject>(json);
+//    }
 
 }

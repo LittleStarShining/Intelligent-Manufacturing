@@ -24,12 +24,25 @@ public class MaterialApi{
     private MaterialMapper materialMapper;
     private TripleExponentialImpl tripleExponential;
 
+    /**
+     * 根据物料ID获取物料信息
+     *
+     * @param materialId 物料ID
+     * @return 包含物料信息的通用结果对象
+     */
     @NotNeedJWT
     @GetMapping("getid/{materialId}")
     public CommonResult<Material> getMaterialById(@PathVariable Integer materialId) {
         Material material = materialService.getMaterialById(materialId);
             return new CommonResult<Material>(material,"查询");
     }
+
+    /**
+     * 根据条件获取物料列表
+     *
+     * @param material 包含查询条件的对象
+     * @return 包含物料列表的通用结果对象
+     */
     @NotNeedJWT
     @PostMapping("/get")
 
@@ -44,6 +57,13 @@ public class MaterialApi{
 
     }
 
+
+    /**
+     * 根据ID获取推测信息
+     *
+     * @param id 物料ID
+     * @return 包含推测信息列表的通用结果对象
+     */
     @NotNeedJWT
     @GetMapping("/getInferById")
 
@@ -65,7 +85,12 @@ public class MaterialApi{
 
     }
 
-
+    /**
+     * 添加新的物料
+     *
+     * @param material 包含要添加的物料信息的对象
+     * @return 包含添加操作结果的通用结果对象
+     */
     @NotNeedJWT
     @PostMapping("/add")
     @ResponseBody
@@ -79,28 +104,25 @@ public class MaterialApi{
             return response.failed(result, "添加货源");
         }
     }
+
+    /**
+     * 更新物料信息
+     *
+     * @param material 包含要更新的物料信息的对象
+     * @return 包含更新后的物料信息的通用结果对象
+     */
     @NotNeedJWT
     @PutMapping("update")
     public CommonResult<Material> updateMaterial(@RequestBody Material material) {
         return new CommonResult<Material>(materialService.update(material));
     }
 
-
-    @NotNeedJWT
-    @GetMapping("/getPredict")
-    public void test(){
-        double[] real = { 362, 385, 432, 341, 382, 409, 498, 387, 473, 513, 582, 600,362, 385, 432, 341, 382, 409, 498, 387, 473, 513, 582, 600,100};
-        double alpha = 0.1, beta = 0.45, gamma = 0;
-        int period = 12, m = 1;
-        boolean debug = false;
-        double[] predict = TripleExponentialImpl.forecast(real, alpha, beta, gamma, period, m, debug);
-        System.out.println("-----------predict----------------------------------");
-        for(int i = real.length; i < predict.length; i++){
-            System.out.println(predict[i]);
-        }
-
-    }
-
+    /**
+     * 删除指定ID的物料
+     *
+     * @param materialId 要删除的物料ID
+     * @return 包含删除操作结果的通用结果对象
+     */
     @NotNeedJWT
     @DeleteMapping("delete/{materialId}")
     public CommonResult<Integer> deleteMaterial(@PathVariable Integer materialId) {
