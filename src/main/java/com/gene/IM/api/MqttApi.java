@@ -58,15 +58,13 @@ public class MqttApi {
 
     @Autowired
     private DeviceService deviceService;
-    @NotNeedJWT
-    @GetMapping("/getLast")
-    public Map getLast() {
-        return mqttService.selectLastData();
-    }
-    @GetMapping("/getLastFive")
-    public Map getLastFive() {
-        return mqttService.selectFiveDate();
-    }
+
+
+    /**
+     * 获取所有设备信息
+     *
+     * @return 包含所有设备信息的 JSONObject 对象
+     */
     @NotNeedJWT
     @GetMapping("/getAllDevices")
     public JSONObject getAllDevices() {
@@ -100,7 +98,12 @@ public class MqttApi {
         }
          */
     }
-
+    /**
+     * 连接设备
+     *
+     * @param devices 包含要连接的设备信息的 JSON 数组
+     * @return 包含连接结果的通用结果对象，包含连接成功的设备列表
+     */
     @NotNeedJWT
     @PostMapping("/connectDevices")
     public CommonResult<List<String>> connectDevices(@RequestBody JSONArray devices) {
@@ -112,7 +115,11 @@ public class MqttApi {
         return new CommonResult<List<String>>(deviceService.connectDevices(devices));
 
     }
-
+    /**
+     * 断开设备连接
+     *
+     * @return 包含断开连接结果的通用结果对象，提示等待下次连接
+     */
     @NotNeedJWT
     @GetMapping("/disconnectDevices")
     public CommonResult<String> disconnectDevices() {
@@ -124,6 +131,11 @@ public class MqttApi {
 
     }
 
+    /**
+     * 获取湿度、温度和气体信息
+     *
+     * @return 包含湿度、温度和气体信息的通用结果对象
+     */
     @NotNeedJWT
     @GetMapping("/getHumTempGas")
     public CommonResult<JSONObject> getHumTempGas() {
@@ -133,6 +145,10 @@ public class MqttApi {
 
     }
 
+    /**
+     * 获取通过消毒节点的率
+     * @return 消毒通过率
+     */
     @NotNeedJWT
     @GetMapping("/getPass")
     public CommonResult<JSONObject> getPass() {
