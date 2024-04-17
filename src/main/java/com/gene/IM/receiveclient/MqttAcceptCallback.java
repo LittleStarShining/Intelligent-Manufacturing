@@ -117,59 +117,10 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
         // 格式化时间为 HH:mm:ss
         String formattedTime = currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
-
-
-
         String payload = mqttMessage.toString();
-        if(topic.equals("TopicA")) {
-            System.out.println("TTTTTTT");
-            JSONObject jsonObject = new JSONObject(mqttMessage.toString());
-            logger.info("接收的消息内容: " + jsonObject);
 
-//            Db.use().execute("INSERT INTO task1table(temp,wet,status)VALUES(?,?,?)", temp, wet, status);
-            System.out.println((int)jsonObject.get("temp")+(int)jsonObject.get("wet")+jsonObject.getStr("status"));
-            int a = jdbc.update("insert into task1table(temp,wet,status,date,time) values (?, ?,?, CURRENT_DATE, CURRENT_TIME)",  (int)jsonObject.get("temp"), (int)jsonObject.get("wet"),jsonObject.getStr("status"));
-
-            if((int)jsonObject.get("temp")>=30) {
-                System.out.println("temp");
-
-                System.out.println(client8.publish(false ,"TopicC","on"));
-
-            }
-
-
-        } else if (topic.equals("topicB")) {
-//            try {
-//                massageQueue.put(payload);
-//                if (massageQueue.size() == 2) {
-//                    int averageTemp = 0;
-//                    int averageWet = 0;
-//                    String status = null;
-//                    // 处理队列中的数据
-//                    for (String data : massageQueue) {
-//                        System.out.println("Processing: " + data);
-//                        JSONObject jsonObject = new JSONObject(data);
-//                        int temp = (int) jsonObject.get("temp");
-//                        int wet = (int) jsonObject.get("wet");
-//                        status = (String) jsonObject.get("status");
-//                        averageTemp+=temp;
-//                        averageWet+=wet;
-//                    }
-//                    averageTemp/=2;
-//                    averageWet/=2;
-//
-//                    Db.use().execute("INSERT INTO average(av_temp,av_wet,status,date,time) VALUES(?,?,?,?,?)", averageTemp, averageWet,status,formattedDate,formattedTime);
-//
-//                    // 清空队列
-//                    massageQueue.clear();
-//
-//                }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-        }
         //获取收到的硬件设备信息
-        else if(topic.equals("publish")) {
+        if(topic.equals("publish")) {
 //            mac.get()
             //若未连接
             if(!connect) {
@@ -322,8 +273,6 @@ public class MqttAcceptCallback implements MqttCallbackExtended {
 
 
                 }
-
-
                 if (!massageQueue.offer(json)) {
                     // 队列已满，弹出头元素
                     JSONObject oldMessage = massageQueue.poll();

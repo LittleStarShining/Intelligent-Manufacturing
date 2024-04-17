@@ -108,7 +108,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /**
-     * 获取订单
+     * 获取进入消毒节点的订单个数
      * @return
      */
     @Override

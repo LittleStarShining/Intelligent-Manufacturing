@@ -1,5 +1,6 @@
 package com.gene.IM.api;
 
+import cn.hutool.json.JSONObject;
 import com.gene.IM.DTO.MaterialDTO;
 import com.gene.IM.DTO.SelectMaterial;
 import com.gene.IM.JWT.annotation.NotNeedJWT;
@@ -32,9 +33,21 @@ public class MaterialApi{
      */
     @NotNeedJWT
     @GetMapping("getid/{materialId}")
-    public CommonResult<Material> getMaterialById(@PathVariable Integer materialId) {
+    public CommonResult<JSONObject> getMaterialById(@PathVariable Integer materialId) {
         Material material = materialService.getMaterialById(materialId);
-            return new CommonResult<Material>(material,"查询");
+        double[] real = materialMapper.getAllConsumes(materialId);
+        double alpha = 0.1, beta = 0.45, gamma = 0;
+        int period = 12, m = 1;
+        boolean debug = false;
+        double[] predict = TripleExponentialImpl.forecast(real, alpha, beta, gamma, period, m, debug);
+        System.out.println("-----------predict----------------------------------");
+        JSONObject json = new JSONObject();
+        for (int i = real.length; i < predict.length; i++) {
+            json.set("infer",predict[i]);
+            System.out.println(predict[i]);
+        }
+        json.set("material",material);
+            return new CommonResult<JSONObject>(json,"查询");
     }
 
     /**
