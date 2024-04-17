@@ -94,17 +94,18 @@
         SELECT COUNT(*) FROM `order`;
     </select>
     <!-- Select Query -->
-    <select id="getWaitingTask" resultMap="waitingOrderListInfo">
-        SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl
-        FROM `order` o
-        WHERE o.status = '等候';
+
+    <select id="getWaitingTask" resultMap="orderDetailInfo">
+    SELECT o.id, o.type_name, o.order_num, o.order_money, o.ddl,o.predict_start,o.predict_finish
+    FROM `order` o
+    WHERE o.status = '等候';
     </select>
     <!-- Select Query -->
-    <select id="getDoingTask" resultMap="doingOrderListInfo">
-        SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl
-        FROM `order` o
-                 INNER JOIN order_line ol ON o.id = ol.order_id
-        WHERE o.status = '处理中';
+    <select id="getDoingTask" resultMap="orderDetailInfo">
+    SELECT o.id, o.type_name, ol.line_id, o.order_money, o.ddl,o.predict_start,o.predict_finish
+    FROM `order` o
+    INNER JOIN order_line ol ON o.id = ol.order_id
+    WHERE o.status = '处理中';
     </select>
     <!-- Select Query -->
     <select id="getOrderDetail" resultMap="orderDetailInfo">

@@ -2,6 +2,7 @@ package com.gene.IM.api;
 
 
 import com.gene.IM.DTO.ObjectDetectionResult;
+import com.gene.IM.JWT.annotation.NotNeedJWT;
 import com.gene.IM.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacpp.DoublePointer;
@@ -17,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -126,9 +124,10 @@ public class YoloApi {
      * 跳转到文件上传页面
      * @return
      */
-    @RequestMapping("index")
-    public String toUpload(){
-        return "index";
+    @NotNeedJWT
+    @GetMapping("/index")
+    public int toUpload(){
+        return 1;
     }
 
     /**
@@ -141,7 +140,7 @@ public class YoloApi {
     private static boolean upload(MultipartFile file, String path, String fileName){
         //使用原文件名
         String realPath = path + "/" + fileName;
-
+        System.out.println("1111");
         File dest = new File(realPath);
 
         //判断文件父目录是否存在
@@ -164,13 +163,15 @@ public class YoloApi {
         }
     }
 
+
     /**
      *
      * @param file 要上传的文件
      * @return
      */
+    @NotNeedJWT
     @RequestMapping("fileUpload")
-    public Map<String,Object> upload(@RequestParam("fileName") MultipartFile file){
+    public Map<String,Object> upload(@RequestParam("file") MultipartFile file){
         log.info("文件 [{}], 大小 [{}]", file.getOriginalFilename(), file.getSize());
         Map<String,Object> map = new HashMap<>();
         // 文件名称
@@ -199,7 +200,6 @@ public class YoloApi {
 
         // 检测到的目标总数
         int detectNum = results.size();
-
         // 没检测到
         if (detectNum<1) {
             System.out.println("未检测到目标");
@@ -433,6 +433,7 @@ public class YoloApi {
      * 显示单张图片
      * @return
      */
+    @NotNeedJWT
     @RequestMapping("show")
     public ResponseEntity showPhotos(String fileName){
         if (null==fileName) {

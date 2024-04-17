@@ -13,7 +13,14 @@ mqtt:
   defaultTopic: bcd
   isOpen: true
   qos: 1
-
+web:
+  upload-path: D:/Git-Project/IM/src/main/resources
+opencv:
+  yolo-cfg-path: D:/Git-Project/IM/src/main/resources/yolov4.cfg
+  yolo-weights-path: D:/Git-Project/IM/src/main/resources/yolov4.weights
+  yolo-coconames-path: D:/Git-Project/IM/src/main/resources/lyy.names
+  yolo-width: 608
+  yolo-height: 608
 spring:
   main:
     allow-circular-references: true  #允许循环引用

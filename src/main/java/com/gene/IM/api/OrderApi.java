@@ -16,6 +16,17 @@ import java.util.Map;
 @RequestMapping("/order")
 public class OrderApi {
 
+    @NotNeedJWT
+    /**
+     * 跳转到文件上传页面
+     * @return
+     */
+    @GetMapping("/index")
+    public int hi(){
+        return 1;
+    }
+
+
     @Autowired
     private OrderService orderService;
 
