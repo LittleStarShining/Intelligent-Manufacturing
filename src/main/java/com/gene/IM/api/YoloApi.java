@@ -222,6 +222,7 @@ public class YoloApi {
 
         // 将添加了标注的图片保持在磁盘上，并将图片信息写入map（给跳转页面使用）
         saveMarkedImage(map, src);
+        System.out.println(results.get(0).getClassName());
         return map;
     }
 

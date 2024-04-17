@@ -4,6 +4,16 @@ public class OrderIndex {
     private int id;
     private int orderNum;
     private int lineID;
+    private int done;
+    public int getDone() {
+        return done;
+    }
+
+    public void setDone(int done) {
+        this.done = done;
+    }
+
+
 
 
     public int getId() {
